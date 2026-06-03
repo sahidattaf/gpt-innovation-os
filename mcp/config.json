@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "gpt-innovation-os": {
+      "command": "node",
+      "args": ["./mcp/server.js"],
+      "env": {
+        "MCP_AUTH_TOKEN": "${MCP_AUTH_TOKEN}"
+      }
+    }
+  }
+}
