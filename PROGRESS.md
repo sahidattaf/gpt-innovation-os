@@ -41,3 +41,23 @@
 
 - Do NOT migrate from `curacao-connect-pro`
 - Windows build requires `pnpm build --concurrency 1` — parallel builds crash with exit 134 (OOM)
+## T-02 — Website Vercel Deployment
+
+Status: Complete
+
+Vercel website deployment:
+- Project: gpt-os-website
+- App: apps/website
+- Live URL: https://gpt-os-website.vercel.app/
+- Status: deployed successfully
+- Framework: Next.js
+- Root Directory: apps/website
+- Build Command: pnpm build
+- Output Directory: .next
+- Install Command: pnpm install --frozen-lockfile
+
+Notes:
+- First deploy had 404 because wrong root/preset settings were used.
+- Fixed by deleting/re-importing the Vercel project with Root Directory apps/website.
+- Other apps are not deployed yet.
+- Supabase, Cloudflare, and custom domain are not started yet.
