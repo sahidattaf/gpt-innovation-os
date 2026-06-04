@@ -61,3 +61,27 @@ Notes:
 - Fixed by deleting/re-importing the Vercel project with Root Directory apps/website.
 - Other apps are not deployed yet.
 - Supabase, Cloudflare, and custom domain are not started yet.
+
+## T-03 — Chatbot Widget Vercel Deployment
+
+Status: Complete
+
+Vercel chatbot-widget deployment:
+
+- Project: gpt-os-chatbot-widget
+- App: apps/chatbot-widget
+- Live URL: <https://gpt-os-chatbot-widget.vercel.app/>
+- Status: deployed successfully
+- Framework: Next.js
+- Root Directory: apps/chatbot-widget
+- Build Command: pnpm build
+- Output Directory: .next
+- Install Command: pnpm install --frozen-lockfile
+- Environment variable used:
+  - NEXT_PUBLIC_APP_URL=<https://gpt-os-website.vercel.app>
+
+Notes:
+
+- ANTHROPIC_API_KEY was not added — current chatbot-widget page is static (no API routes yet).
+- Do not deploy storefront, ai-dashboard, or command-center yet.
+- Supabase, Stripe, Anthropic runtime key, Cloudflare, and custom domains are not started yet.
