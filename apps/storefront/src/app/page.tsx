@@ -12,6 +12,8 @@ export const metadata: Metadata = {
 
 export default function StorefrontPage() {
   const featured = getFeaturedProducts();
+  const featuredIds = new Set(featured.map((p) => p.id));
+  const allProducts = PRODUCTS.filter((p) => !featuredIds.has(p.id));
 
   return (
     <>
@@ -30,10 +32,10 @@ export default function StorefrontPage() {
             >
               Featured
             </h2>
-            <p className="mb-8 text-2xl font-bold text-stone-50">
+            <p className="mb-6 text-2xl font-bold text-stone-50 sm:mb-8">
               Most requested products
             </p>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
               {featured.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -42,7 +44,7 @@ export default function StorefrontPage() {
         </section>
       )}
 
-      {/* Full catalogue */}
+      {/* Full catalogue — featured products excluded */}
       <section
         id="products"
         className="py-16 sm:py-20"
@@ -55,10 +57,10 @@ export default function StorefrontPage() {
           >
             All products
           </h2>
-          <p className="mb-8 text-2xl font-bold text-stone-50">
+          <p className="mb-6 text-2xl font-bold text-stone-50 sm:mb-8">
             The full AI product catalogue
           </p>
-          <ProductGrid products={PRODUCTS} />
+          <ProductGrid products={allProducts} />
         </div>
       </section>
 

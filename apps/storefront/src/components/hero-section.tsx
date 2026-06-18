@@ -47,7 +47,7 @@ export function HeroSection() {
         </div>
 
         {/* Trust signals */}
-        <div className="mt-16 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 sm:mt-16 sm:gap-y-4">
           {[
             "Multilingual AI (EN · PAP · ES · NL)",
             "Based in Curaçao",
