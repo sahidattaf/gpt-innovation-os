@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+/* GPT Innovation Design Tokens */
+@layer base {
+  :root {
+    --brand:         #f59e0b; /* amber-500 */
+    --brand-dark:    #d97706; /* amber-600 */
+    --brand-light:   #fbbf24; /* amber-400 */
+    --bg:            #0c0a09; /* stone-950 */
+    --surface:       #1c1917; /* stone-900 */
+    --surface-2:     #292524; /* stone-800 */
+    --text:          #fafaf9; /* stone-50  */
+    --text-muted:    #a8a29e; /* stone-400 */
+    --text-subtle:   #78716c; /* stone-500 */
+    --border:        #292524; /* stone-800 */
+    --radius:        0.75rem;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+}
