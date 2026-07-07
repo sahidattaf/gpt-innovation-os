@@ -1,0 +1,26 @@
+{
+  "restaurant_name": "Papai Since 1933",
+  "instagram": "@papaisince1933",
+  "location": "Jan Noorduynweg #19-6, Willemstad, Curaçao",
+  "opening_hours": "Daily 11am–12am",
+  "reservation_phone": "+5999 527 2247",
+  "signals": [
+    "open daily",
+    "reservations active",
+    "hiring",
+    "growing Instagram account"
+  ],
+  "brand": {
+    "tone": [
+      "warm",
+      "local",
+      "family",
+      "heritage"
+    ],
+    "colors": [
+      "black",
+      "white",
+      "orange"
+    ]
+  }
+}

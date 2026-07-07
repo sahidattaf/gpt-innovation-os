@@ -1,0 +1,1 @@
+insert into restaurants (name, instagram, location, opening_hours, reservation_phone) values ('Papai Since 1933', '@papaisince1933', 'Jan Noorduynweg #19-6, Willemstad, Curaçao', 'Daily 11am–12am', '+5999 527 2247');
