@@ -122,6 +122,22 @@ Monthly KPI review, prompt and workflow improvements, new use cases, and ROI rep
 - Store sensitive operational data in Supabase or restricted Notion areas.
 - Make reusable assets industry-neutral unless specialization is intentional.
 
+## Flagship living laboratory — Sebier Business Group
+
+Sebier Business Group is the first internal flagship implementation for validating the method across:
+
+- Car rental
+- Hardware and building supplies
+- Tire sales and service
+- Fireworks retail
+- Christmas seasonal retail
+- Real estate and property rentals
+- Gas station and convenience retail
+
+Sebier uses one executive oversight layer, while each business unit keeps separate workflows, permissions, KPIs, operational data, and financial records unless discovery approves a controlled integration.
+
+Reusable public-safe patterns are documented in this repository. Private evidence and operating data remain in restricted Notion areas or Supabase.
+
 ## Industry blueprint — ice and frozen distribution
 
 Potential modules for Kortijn, Lovers Ice Cream, and similar businesses:
@@ -138,6 +154,27 @@ Potential modules for Kortijn, Lovers Ice Cream, and similar businesses:
 - Daily executive briefing
 
 Discovery must confirm ownership, data boundaries, financial separation, and system access before any shared platform is proposed.
+
+## Industry blueprint — gas station and convenience retail
+
+Potential modules:
+
+- Fuel inventory and tank dashboard
+- Delivery and reorder planning
+- Pump maintenance register
+- Shift handover workflow
+- Daily cash and POS reconciliation
+- Variance and exception alerts
+- Convenience-store inventory control
+- Product margin and basket analytics
+- Fleet-account CRM
+- Loyalty and promotion workflows
+- Incident and compliance register
+- Daily executive briefing
+
+The recommended first pilot is one location with three workflows: daily reconciliation, shift handover, and executive briefing.
+
+AI must not independently authorize fuel purchases, price changes, cash adjustments, refunds, credit limits, staff discipline, or safety and compliance decisions.
 
 ## KPIs
 
