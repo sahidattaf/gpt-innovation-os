@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SectionHeader } from "@/components/section-header";
 import { BUSINESS_CONTACT } from "@/lib/contact";
 
@@ -64,6 +65,20 @@ export default function ContactPage() {
       {/* Contact methods */}
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 rounded-2xl border border-amber-500/20 bg-amber-500/5 p-6 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-stone-50">Not sure where to start?</h2>
+              <p className="mt-2 text-sm text-stone-400">
+                Prepare a focused discovery request before opening WhatsApp.
+              </p>
+            </div>
+            <Link
+              href="/discovery"
+              className="mt-4 inline-flex rounded-xl bg-amber-500 px-5 py-3 text-sm font-semibold text-stone-950 hover:bg-amber-400 sm:mt-0"
+            >
+              Start AI Discovery
+            </Link>
+          </div>
           <div className="grid gap-4 sm:grid-cols-3 sm:gap-6">
             {CONTACT_METHODS.map((method) => (
               <div
