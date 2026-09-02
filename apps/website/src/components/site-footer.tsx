@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BUSINESS_CONTACT } from "@/lib/contact";
 
 const FOOTER_NAV = {
   Products: [
@@ -33,6 +34,14 @@ export function SiteFooter() {
               entrepreneurs. Multilingual, practical, human-reviewed.
             </p>
             <p className="mt-4 text-xs text-stone-600">Based in Curaçao</p>
+            <a
+              href={BUSINESS_CONTACT.whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-block text-sm font-medium text-amber-400 transition-colors hover:text-amber-300"
+            >
+              WhatsApp {BUSINESS_CONTACT.whatsappDisplay}
+            </a>
           </div>
 
           {/* Link columns */}

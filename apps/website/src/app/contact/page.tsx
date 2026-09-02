@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { SectionHeader } from "@/components/section-header";
+import { BUSINESS_CONTACT } from "@/lib/contact";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -10,15 +11,15 @@ export const metadata: Metadata = {
 const CONTACT_METHODS = [
   {
     label: "WhatsApp",
-    value: "Preferred channel for quick questions and discovery calls",
-    href: "https://wa.me/5999000000",
+    value: BUSINESS_CONTACT.whatsappDisplay,
+    href: BUSINESS_CONTACT.whatsappHref,
     cta: "Message on WhatsApp",
-    note: "Curaçao business hours · EN · PAP · ES · NL",
+    note: "Preferred channel · Curaçao business hours · EN · PAP · ES · NL",
   },
   {
     label: "Email",
-    value: "sahidattaf@gmail.com",
-    href: "mailto:sahidattaf@gmail.com",
+    value: BUSINESS_CONTACT.email,
+    href: `mailto:${BUSINESS_CONTACT.email}`,
     cta: "Send an Email",
     note: "We respond within 1 business day",
   },
@@ -77,6 +78,8 @@ export default function ContactPage() {
                 {method.href && method.cta && (
                   <a
                     href={method.href}
+                    target={method.label === "WhatsApp" ? "_blank" : undefined}
+                    rel={method.label === "WhatsApp" ? "noopener noreferrer" : undefined}
                     className="mt-auto pt-6 text-sm font-semibold text-amber-400 transition-colors hover:text-amber-300"
                   >
                     {method.cta} →
