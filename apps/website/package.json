@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "rm -rf .test-dist && tsc src/lib/discovery.ts src/lib/discovery.test.ts --outDir .test-dist --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck && node --test .test-dist/discovery.test.js && rm -rf .test-dist"
   },
   "dependencies": {
     "@gpt-os/ui": "workspace:*",
