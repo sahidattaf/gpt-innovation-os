@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ServiceCard } from "@/components/service-card";
 import { IndustryCard } from "@/components/industry-card";
 import { CTASection } from "@/components/cta-section";
+import { DiscoveryLink } from "@/components/discovery-link";
 
 export const metadata: Metadata = {
   title: "AI Products for Entrepreneurs",
@@ -96,12 +97,12 @@ export default function HomePage() {
               >
                 See Our Services
               </Link>
-              <Link
-                href="/discovery"
+              <DiscoveryLink
+                location="home"
                 className="rounded-xl border border-stone-700 px-6 py-3 text-sm font-semibold text-stone-200 transition-colors hover:border-stone-600 hover:bg-stone-800 focus-visible:outline-2 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
               >
                 Start AI Discovery
-              </Link>
+              </DiscoveryLink>
             </div>
           </div>
           <div className="mt-14 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { DiscoveryLink } from "@/components/discovery-link";
 
 const NAV_LINKS = [
   { label: "Products", href: "/products" },
@@ -44,12 +45,12 @@ export function SiteHeader() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/discovery"
+          <DiscoveryLink
+            location="header"
             className="ml-3 rounded-xl bg-amber-500 px-4 py-2 text-sm font-semibold text-stone-950 transition-colors hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
           >
             Start Discovery
-          </Link>
+          </DiscoveryLink>
         </nav>
 
         {/* Mobile toggle */}
@@ -106,13 +107,13 @@ export function SiteHeader() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/discovery"
+            <DiscoveryLink
+              location="header"
               onClick={() => setMobileOpen(false)}
               className="mt-2 rounded-xl bg-amber-500 px-4 py-2.5 text-center text-sm font-semibold text-stone-950 transition-colors hover:bg-amber-400"
             >
               Start Discovery
-            </Link>
+            </DiscoveryLink>
           </nav>
         </div>
       )}
