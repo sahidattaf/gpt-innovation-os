@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { FormEvent } from "react";
 import {
   buildDiscoveryWhatsAppUrl,
@@ -9,6 +9,7 @@ import {
   validateDiscoveryForm,
 } from "@/lib/discovery";
 import type { DiscoveryFormData, DiscoveryFieldErrors } from "@/lib/discovery";
+import { sendLeadMeasurement } from "@/lib/lead-measurement";
 
 type TextField = Exclude<keyof DiscoveryFormData, "privacyAccepted">;
 
@@ -68,6 +69,16 @@ export function DiscoveryForm() {
   const [form, setForm] = useState<DiscoveryFormData>(INITIAL_DISCOVERY_FORM);
   const [errors, setErrors] = useState<DiscoveryFieldErrors>({});
   const [reviewing, setReviewing] = useState(false);
+  const measuredMilestones = useRef(new Set<string>());
+
+  const measureOnce = (event: Parameters<typeof sendLeadMeasurement>[0]) => {
+    if (measuredMilestones.current.has(event.name)) {
+      return;
+    }
+
+    measuredMilestones.current.add(event.name);
+    sendLeadMeasurement(event);
+  };
 
   const clearError = (field: keyof DiscoveryFormData) => {
     setErrors((current) => {
@@ -78,6 +89,7 @@ export function DiscoveryForm() {
   };
 
   const setTextField = (field: TextField, value: string) => {
+    measureOnce({ name: "intake_started" });
     setForm((current) => ({ ...current, [field]: value }));
     clearError(field);
   };
@@ -88,6 +100,10 @@ export function DiscoveryForm() {
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length === 0) {
+      measureOnce({
+        name: "validation_completed",
+        properties: { result: "valid" },
+      });
       setReviewing(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -141,6 +157,12 @@ export function DiscoveryForm() {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() =>
+              measureOnce({
+                name: "whatsapp_continuation_selected",
+                properties: { source: "discovery_review" },
+              })
+            }
             className="rounded-xl bg-amber-500 px-5 py-3 text-center text-sm font-semibold text-stone-950 hover:bg-amber-400"
           >
             Continue to WhatsApp
@@ -229,6 +251,7 @@ export function DiscoveryForm() {
             type="checkbox"
             checked={form.privacyAccepted}
             onChange={(event) => {
+              measureOnce({ name: "intake_started" });
               setForm((current) => ({ ...current, privacyAccepted: event.target.checked }));
               clearError("privacyAccepted");
             }}

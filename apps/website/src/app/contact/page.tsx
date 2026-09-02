@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { SectionHeader } from "@/components/section-header";
+import { DiscoveryLink } from "@/components/discovery-link";
 import { BUSINESS_CONTACT } from "@/lib/contact";
 
 export const metadata: Metadata = {
@@ -72,12 +72,12 @@ export default function ContactPage() {
                 Prepare a focused discovery request before opening WhatsApp.
               </p>
             </div>
-            <Link
-              href="/discovery"
+            <DiscoveryLink
+              location="contact"
               className="mt-4 inline-flex rounded-xl bg-amber-500 px-5 py-3 text-sm font-semibold text-stone-950 hover:bg-amber-400 sm:mt-0"
             >
               Start AI Discovery
-            </Link>
+            </DiscoveryLink>
           </div>
           <div className="grid gap-4 sm:grid-cols-3 sm:gap-6">
             {CONTACT_METHODS.map((method) => (
