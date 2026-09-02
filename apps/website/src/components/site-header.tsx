@@ -7,6 +7,7 @@ const NAV_LINKS = [
   { label: "Products", href: "/products" },
   { label: "Open EU", href: "/open-eu" },
   { label: "About", href: "/about" },
+  { label: "AI Discovery", href: "/discovery" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
@@ -44,10 +45,10 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link
-            href="/products"
+            href="/discovery"
             className="ml-3 rounded-xl bg-amber-500 px-4 py-2 text-sm font-semibold text-stone-950 transition-colors hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
           >
-            Get Started
+            Start Discovery
           </Link>
         </nav>
 
@@ -106,11 +107,11 @@ export function SiteHeader() {
               </Link>
             ))}
             <Link
-              href="/products"
+              href="/discovery"
               onClick={() => setMobileOpen(false)}
               className="mt-2 rounded-xl bg-amber-500 px-4 py-2.5 text-center text-sm font-semibold text-stone-950 transition-colors hover:bg-amber-400"
             >
-              Get Started
+              Start Discovery
             </Link>
           </nav>
         </div>
