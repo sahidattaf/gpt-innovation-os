@@ -97,10 +97,10 @@ export default function HomePage() {
                 See Our Services
               </Link>
               <Link
-                href="/contact"
+                href="/discovery"
                 className="rounded-xl border border-stone-700 px-6 py-3 text-sm font-semibold text-stone-200 transition-colors hover:border-stone-600 hover:bg-stone-800 focus-visible:outline-2 focus-visible:outline-amber-500 focus-visible:outline-offset-2"
               >
-                Talk to Us
+                Start AI Discovery
               </Link>
             </div>
           </div>
