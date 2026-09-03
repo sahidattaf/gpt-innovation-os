@@ -1,0 +1,62 @@
+version: '1.0'
+mode: controlled_internal_pilot
+terminal_state: APPROVED
+fail_closed: true
+
+blocked_entities:
+  - BOSSA
+  - Kai Kòrsou
+  - Sea Horizon
+blocked_data_classes:
+  - confidential_client_data
+  - credentials
+  - secrets
+prohibited_actions:
+  - external_send
+  - publish
+  - deploy
+  - production_write
+  - client_delivery
+  - autonomous_execution
+
+permitted_sources:
+  - GPT Innovation Command Center
+  - Software 3.0 Transformation OS
+  - GPT Innovation by Attaf
+  - GPT Innovation — Owner Business Plan 2026
+  - GPT Innovation — Company Operations Hub
+  - sahidattaf/gpt-innovation-os
+  - relevant chat history
+
+unknown_source_result: OWNER_REVIEW
+
+source_precedence:
+  - GPT Innovation Command Center
+  - Software 3.0 Transformation OS — Command Center
+  - relevant chat history
+
+approval_precedence:
+  - Signed PDF
+  - Notion
+  - Chat
+
+approval_requirements:
+  notion:
+    required:
+      - Command ID
+      - Packet Version
+      - Approved
+      - Approver
+      - Date
+      - Approval Method
+  chat:
+    explicit_phrases:
+      - Approved
+      - Proceed
+    require_unique_pending_packet: true
+  signed_pdf:
+    require_command_id: true
+    require_packet_version: true
+
+approval_is_non_transitive: true
+material_change_invalidates_prior_approval: true
