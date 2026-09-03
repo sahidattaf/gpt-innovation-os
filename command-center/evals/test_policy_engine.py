@@ -1,6 +1,11 @@
+import sys
 import unittest
+from pathlib import Path
 
-from command_center.src.policy_engine import approval_check, evidence_completeness, next_state, scope_check, source_check
+SRC = Path(__file__).resolve().parents[1] / "src"
+sys.path.insert(0, str(SRC))
+
+from policy_engine import approval_check, evidence_completeness, next_state, scope_check, source_check
 
 
 class PolicyEngineTests(unittest.TestCase):
