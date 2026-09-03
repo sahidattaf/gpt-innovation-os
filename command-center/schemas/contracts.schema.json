@@ -77,6 +77,24 @@
         "result": {"type": "string"}
       },
       "additionalProperties": false
+    },
+    "AIRun": {
+      "type": "object",
+      "required": ["run_id", "command_id", "stage", "model", "status"],
+      "properties": {
+        "run_id": {"type": "string"},
+        "command_id": {"type": "string"},
+        "stage": {"type": "string"},
+        "model": {"type": "string"},
+        "input_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "total_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "estimated_cost_usd": {"type": ["number", "null"], "minimum": 0},
+        "estimated_cost_xcg": {"type": ["number", "null"], "minimum": 0},
+        "duration_ms": {"type": ["integer", "null"], "minimum": 0},
+        "status": {"enum": ["SUCCESS", "FAIL"]}
+      },
+      "additionalProperties": false
     }
   }
 }
