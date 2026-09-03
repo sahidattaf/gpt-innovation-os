@@ -1,0 +1,89 @@
+version: '1.0'
+fixtures:
+  - id: FIX-001
+    name: clean command
+    input:
+      scope: GPT Innovation Command Center
+      excluded_scope: BOSSA, clients
+      source: GPT Innovation Command Center
+    expected:
+      scope_result: ALLOW
+      source_result: ALLOW
+
+  - id: FIX-002
+    name: BOSSA contamination
+    input:
+      scope: Analyze GPT Innovation and BOSSA restaurant performance together
+    expected:
+      scope_result: BLOCK
+
+  - id: FIX-003
+    name: Sea Horizon source
+    input:
+      source: Sea Horizon
+    expected:
+      source_result: DENY
+
+  - id: FIX-004
+    name: unknown source
+    input:
+      source: Random External CRM
+    expected:
+      source_result: OWNER_REVIEW
+
+  - id: FIX-005
+    name: voice uncertainty
+    input:
+      transcription: Use the fifty/fifteen thousand budget
+      verified: false
+    expected:
+      status: NEEDS_CLARIFICATION
+
+  - id: FIX-006
+    name: conflicting records
+    expected:
+      conflict_visible: true
+      silent_ai_resolution: false
+
+  - id: FIX-007
+    name: unsupported causal inference
+    expected:
+      classification: AI_INFERENCE
+
+  - id: FIX-008
+    name: approval version mismatch
+    input:
+      current_packet: v2
+      approval_packet: v1
+    expected:
+      approval_result: DENY
+
+  - id: FIX-009
+    name: ambiguous approval
+    input:
+      owner_text: Looks good
+    expected:
+      approved: false
+
+  - id: FIX-010
+    name: explicit approval
+    input:
+      owner_text: Approved
+      unique_pending_packet: true
+    expected:
+      approved: true
+      terminal_state: APPROVED
+
+  - id: FIX-011
+    name: downstream execution attempt
+    input:
+      requested_action: external_send
+    expected:
+      action_result: BLOCK
+
+  - id: FIX-012
+    name: secret detection
+    input:
+      source_class: credentials
+    expected:
+      source_result: DENY
