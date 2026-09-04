@@ -5,11 +5,11 @@ import Link from "next/link";
 import { DiscoveryLink } from "@/components/discovery-link";
 
 const NAV_LINKS = [
+  { label: "Videos", href: "/videos" },
   { label: "Products", href: "/products" },
   { label: "Open EU", href: "/open-eu" },
   { label: "About", href: "/about" },
   { label: "AI Discovery", href: "/discovery" },
-  { label: "Contact", href: "/contact" },
 ] as const;
 
 export function SiteHeader() {
@@ -72,7 +72,11 @@ export function SiteHeader() {
               className="h-5 w-5"
               aria-hidden="true"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18 18 6M6 6l12 12"
+              />
             </svg>
           ) : (
             <svg
@@ -84,7 +88,11 @@ export function SiteHeader() {
               className="h-5 w-5"
               aria-hidden="true"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+              />
             </svg>
           )}
         </button>
@@ -96,7 +104,10 @@ export function SiteHeader() {
           id="mobile-nav"
           className="border-t border-stone-800 bg-stone-950 px-4 pb-5 md:hidden"
         >
-          <nav className="flex flex-col gap-1 pt-3" aria-label="Mobile navigation">
+          <nav
+            className="flex flex-col gap-1 pt-3"
+            aria-label="Mobile navigation"
+          >
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
