@@ -1,7 +1,7 @@
 # S3T Controlled Source Index
 
-**Pack version:** 1.0  
-**Gate:** S3T-SOURCEPACK-1  
+**Pack version:** 1.1  
+**Gate:** S3T-SOURCEPACK-1/2  
 **Classification:** Internal operating guidance suitable for the public repository; no secrets or live data  
 **Last reviewed:** 2026-09-04
 
@@ -16,6 +16,7 @@
 | HOSPITALITY_OS_ADAPTER.md | Adapter | reusable hospitality capability boundary |
 | BOSSA_AI_OS_ADAPTER.md | Adapter | BOSSA demo/read-only boundary |
 | GPT_INNOVATION_OS_ADAPTER.md | Adapter | implementation-owner contract |
+| SAHID_AI_HUB_ADAPTER.md | Adapter | portfolio observability and evidence reconciliation |
 | SOURCE_INDEX.md | Index | pack manifest and precedence |
 
 ## Precedence
