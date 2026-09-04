@@ -4,6 +4,7 @@
 |---|---|---|---|---|
 | GPT Innovation OS | Core implementation owner | Internal | GitHub + Notion | owner review of source-pack PR |
 | Software 3.0 Transformer | Core governance workspace | Internal isolated project | Notion + GitHub | validate controlled sources |
+| Sahid AI Hub | Adapter documented | Read-only portfolio observability | sahid-ai-hub repository | reconcile declared states with controlled evidence |
 | Hospitality OS plugin | Adapter documented | Read-only capability reference | hospitality-os-plugin GitHub repo | evidence review before integration |
 | BOSSA AI OS | Adapter documented | Demo/read-only reference only | BOSSA repo + Notion | separate BOSSA owner gate |
 | Sea Horizon Hospitality OS | Not connected | No new authority | client-controlled records | separate client/owner gate |
@@ -11,4 +12,4 @@
 | AI Weekly News | Not connected | No new authority | project-controlled records | separate pilot decision |
 
 ## Registry rule
-“Registered” does not mean integrated, deployed, commercially ready, or authorized for cross-project data access.
+“Registered” does not mean integrated, deployed, commercially ready, or authorized for cross-project data access. Sahid AI Hub status and revenue fields are declared metadata until reconciled with authoritative project evidence.
