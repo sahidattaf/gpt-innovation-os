@@ -9,6 +9,7 @@ const FOOTER_NAV = {
     { label: "Marketing AI", href: "/products#marketing" },
   ],
   Company: [
+    { label: "AI Video Hub", href: "/videos" },
     { label: "About", href: "/about" },
     { label: "Open EU AI Operator", href: "/open-eu" },
     { label: "Contact", href: "/contact" },
@@ -45,37 +46,46 @@ export function SiteFooter() {
           </div>
 
           {/* Link columns */}
-          {(Object.entries(FOOTER_NAV) as [string, readonly { label: string; href: string }[]][]).map(
-            ([group, links]) => (
-              <div key={group}>
-                <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-stone-400">
-                  {group}
-                </h3>
-                <ul className="space-y-2">
-                  {links.map((link) => (
-                    <li key={link.href}>
-                      <Link
-                        href={link.href}
-                        className="text-sm text-stone-500 transition-colors hover:text-stone-200"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ),
-          )}
+          {(
+            Object.entries(FOOTER_NAV) as [
+              string,
+              readonly { label: string; href: string }[],
+            ][]
+          ).map(([group, links]) => (
+            <div key={group}>
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-stone-400">
+                {group}
+              </h3>
+              <ul className="space-y-2">
+                {links.map((link) => (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      className="text-sm text-stone-500 transition-colors hover:text-stone-200"
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
 
         {/* Bottom bar */}
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t border-stone-800 pt-6 sm:flex-row">
           <p className="text-xs text-stone-600">
-            © {new Date().getFullYear()} GPT Innovation by Attaf. All rights reserved.
+            © {new Date().getFullYear()} GPT Innovation by Attaf. All rights
+            reserved.
           </p>
           <div className="flex items-center gap-1.5">
-            <span className="h-1 w-1 rounded-full bg-amber-500" aria-hidden="true" />
-            <span className="text-xs text-stone-600">AI products — not AI promises</span>
+            <span
+              className="h-1 w-1 rounded-full bg-amber-500"
+              aria-hidden="true"
+            />
+            <span className="text-xs text-stone-600">
+              AI products — not AI promises
+            </span>
           </div>
         </div>
       </div>

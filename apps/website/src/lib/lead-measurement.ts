@@ -1,6 +1,15 @@
 import { track } from "@vercel/analytics";
 
-export const CTA_LOCATIONS = ["header", "home", "contact", "footer"] as const;
+export const CTA_LOCATIONS = [
+  "header",
+  "home",
+  "home_video",
+  "home_final",
+  "video_hub",
+  "video_episode",
+  "contact",
+  "footer",
+] as const;
 
 export type CtaLocation = (typeof CTA_LOCATIONS)[number];
 

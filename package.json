@@ -5,7 +5,7 @@
   "description": "GPT Innovation OS — a full-stack AI operating system for entrepreneurs",
   "scripts": {
     "build": "turbo run build",
-    "dev": "turbo run dev",
+    "dev": "node scripts/dev.mjs",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
