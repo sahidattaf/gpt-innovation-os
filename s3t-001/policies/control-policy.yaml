@@ -1,0 +1,239 @@
+# GPT Innovation Command Center — Control Policy
+# Version: 1.0
+# Status: S3-G5 Ratified
+# Owner: Coach Sahid Attaf
+# Last Updated: 2026-09-05
+
+---
+version: "1.0"
+description: "Deterministic scope, source, and approval policy for GPT Innovation Operator Command Center pilot"
+
+# ============================================================================
+# SECTION 1: BLOCKED ENTITIES
+# ============================================================================
+# Any command, context, or operation referencing these entities is BLOCKED.
+# No AI reasoning, no owner review exception during pilot.
+# Result: BLOCKED_SCOPE
+
+blocked_entities:
+  - BOSSA
+  - Kai Kòrsou
+  - Sea Horizon
+
+# ============================================================================
+# SECTION 2: BLOCKED DATA CLASSES
+# ============================================================================
+# These data classifications must never enter the workflow.
+# If detected: BLOCK immediately, log, audit event, NO retrieval.
+
+blocked_data_classes:
+  - confidential_client_data
+  - credentials
+  - secrets
+  - api_tokens
+  - passwords
+  - private_keys
+  - contract_terms_for_external_clients
+  - financial_statements_of_other_entities
+
+# ============================================================================
+# SECTION 3: PERMITTED SOURCES
+# ============================================================================
+# Only approved sources may be retrieved and used for reasoning.
+# Source must match by explicit name. No inference about "related" sources.
+
+permitted_sources:
+  - name: "GPT Innovation Command Center"
+    type: "Notion Primary"
+    source_type: NOTION_PRIMARY
+    access: READ_ONLY
+    rationale: "System of record for owner commands"
+
+  - name: "Software 3.0 Transformation OS — Command Center"
+    type: "Notion Secondary"
+    source_type: NOTION_SECONDARY
+    access: READ_ONLY
+    rationale: "Approved architectural and process documentation"
+
+  - name: "GPT Innovation by Attaf"
+    type: "Notion Reference"
+    source_type: NOTION_REFERENCE
+    access: READ_ONLY
+    rationale: "Organization context and business operations"
+
+  - name: "GPT Innovation — Owner Business Plan 2026"
+    type: "Notion Reference"
+    source_type: NOTION_REFERENCE
+    access: READ_ONLY
+    rationale: "Strategic planning reference"
+
+  - name: "GPT Innovation — Company Operations Hub"
+    type: "Notion Reference"
+    source_type: NOTION_REFERENCE
+    access: READ_ONLY
+    rationale: "Operational procedures and context"
+
+  - name: "sahidattaf/gpt-innovation-os"
+    type: "GitHub Repository"
+    source_type: GITHUB_DOC
+    access: READ_ONLY
+    rationale: "Approved technical documentation"
+
+  - name: "relevant chat history"
+    type: "Claude Chat"
+    source_type: CHAT
+    access: READ_ONLY
+    rationale: "Approved prior owner instructions and context"
+    constraints:
+      - "Only chat turns referencing GPT Innovation or Software 3.0 project"
+      - "No BOSSA, Kai Kòrsou, client data from other projects"
+      - "Ignore chat turns discussing blocked entities"
+
+# ============================================================================
+# SECTION 4: PROHIBITED ACTIONS
+# ============================================================================
+# These actions are explicitly not permitted during the pilot.
+# If detected in a command intent: BLOCK or NEEDS_CLARIFICATION
+
+prohibited_actions:
+  - external_send
+  - publish
+  - deploy
+  - production_write
+  - repository_write
+  - notion_structure_create
+  - notion_structure_modify
+  - external_contact
+  - autonomous_decision
+  - client_delivery
+  - sales_proposal_external_dispatch
+  - payment_execution
+  - credential_creation
+  - secret_generation
+
+# ============================================================================
+# SECTION 5: APPROVAL PRECEDENCE
+# ============================================================================
+# When approval status is ambiguous, use this hierarchy.
+
+approval_precedence:
+  1: "signed_pdf"
+  2: "approved_notion_record"
+  3: "explicit_owner_chat_confirmation"
+
+# ============================================================================
+# SECTION 6: SOURCE PRECEDENCE
+# ============================================================================
+# When two approved sources contain different facts about the same subject,
+# use this hierarchy. Higher number = higher precedence.
+
+source_precedence:
+  NOTION_PRIMARY: 3
+  NOTION_SECONDARY: 2
+  NOTION_REFERENCE: 1
+  GITHUB_DOC: 1
+  CHAT: 1
+
+precedence_rule: |
+  Fact from higher-precedence source overrides lower precedence.
+  If sources contradict: flag as CONFLICT, require owner resolution.
+  AI may not silently apply precedence to hidden contradictions.
+
+# ============================================================================
+# SECTION 7: POLICY DECISION ENGINE
+# ============================================================================
+# Deterministic result: ALLOW | BLOCK | OWNER_REVIEW
+
+decision_rules:
+  - rule_id: "DENY_BLOCKED_ENTITY"
+    triggers_on: "command_mentions_blocked_entity"
+    result: "BLOCK"
+    consequence: "Stop workflow. Return BLOCKED_SCOPE. No AI reasoning."
+    fail_closed: true
+
+  - rule_id: "DENY_BLOCKED_DATA"
+    triggers_on: "source_contains_blocked_data_class"
+    result: "BLOCK"
+    consequence: "Do not retrieve. Do not pass to model. Log security event."
+    fail_closed: true
+
+  - rule_id: "ALLOW_PERMITTED_SOURCE"
+    triggers_on: "source_name_matches_permitted_list"
+    result: "ALLOW"
+    consequence: "Retrieve context. Pass to reasoning layer."
+
+  - rule_id: "OWNER_REVIEW_UNKNOWN_SOURCE"
+    triggers_on: "source_not_in_permitted_or_blocked_list"
+    result: "OWNER_REVIEW"
+    consequence: "Set status NEEDS_SOURCE_APPROVAL. Return to owner. Do not guess."
+
+  - rule_id: "DENY_PROHIBITED_ACTION"
+    triggers_on: "command_intent_includes_prohibited_action"
+    result: "BLOCK"
+    consequence: "Clarify permitted boundaries. Return NEEDS_CLARIFICATION."
+
+# ============================================================================
+# SECTION 8: FAIL-CLOSED GUARANTEE
+# ============================================================================
+
+fail_closed_rule: |
+  IF authorization cannot be established
+  THEN DENY
+
+  IF uncertain about permission
+  THEN DENY, do not assume probably-allow
+
+  This is non-negotiable during pilot.
+
+# ============================================================================
+# SECTION 9: VOICE POLICY
+# ============================================================================
+# Special handling for voice input.
+
+voice_policy:
+  owner_verification_required: true
+  uncertain_material_content: STOP
+  guessed_names: prohibited
+  guessed_numbers: prohibited
+  guessed_deadlines: prohibited
+  guessed_approval: prohibited
+
+  consequence: |
+    Voice becomes executable inside this analytical workflow ONLY after verification.
+    No autonomous action based on uncertain voice transcription.
+
+# ============================================================================
+# SECTION 10: AUDIT & LOGGING
+# ============================================================================
+
+audit_requirements:
+  - policy_rule_applied: "Record which rule fired"
+  - scope_check_result: "ALLOW | BLOCK | OWNER_REVIEW"
+  - source_retrieval_attempt: "Source name, result, timestamp"
+  - blocked_data_detection: "What was blocked, where, when"
+  - conflict_flag: "If sources conflict, record both + rule applied"
+
+# ============================================================================
+# SECTION 11: POLICY VERSION & CHANGE CONTROL
+# ============================================================================
+
+versioning:
+  current_version: "1.0"
+  schema_version: "1.0"
+  deprecated_versions: []
+  change_log:
+    - version: "1.0"
+      date: "2026-09-05"
+      status: "S3-G5 Ratified"
+      changes: "Initial specification from G5"
+
+# ============================================================================
+# SECTION 12: OWNER SIGNATURE (REPRESENTATION)
+# ============================================================================
+# This policy document represents G5-accepted owner intent.
+# Formal approval: signed PDF or explicit owner gate acceptance.
+
+policy_owner: "Coach Sahid Attaf"
+effective_date: "2026-09-05"
+scope: "GPT Innovation Operator Command Center Pilot (S3-G6 controlled build only)"
+external_execution: "DISABLED"

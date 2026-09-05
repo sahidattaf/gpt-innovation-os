@@ -1,0 +1,516 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GPT Innovation Command Center — Contracts & Schemas",
+  "version": "1.0",
+  "description": "Complete JSON-Schema definitions for all data objects in the S3-G5 pilot workflow",
+  "definitions": {
+    "owner_command": {
+      "type": "object",
+      "title": "Owner Command",
+      "description": "Normalized owner request structure (from G5 section 11)",
+      "required": [
+        "command_id",
+        "objective",
+        "scope",
+        "excluded_scope",
+        "priority",
+        "permitted_sources"
+      ],
+      "properties": {
+        "command_id": {
+          "type": "string",
+          "pattern": "^GIC-\\d{8}-\\d{3}$",
+          "example": "GIC-20260903-001",
+          "description": "Immutable, unique command identifier (format: GIC-YYYYMMDD-NNN)"
+        },
+        "schema_version": {
+          "type": "string",
+          "const": "1.0",
+          "description": "Schema version for this command object"
+        },
+        "objective": {
+          "type": "string",
+          "minLength": 10,
+          "description": "What the owner is trying to accomplish"
+        },
+        "deliverable": {
+          "type": "string",
+          "description": "What the owner expects as output (optional, defaults to recommendation)"
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 5,
+          "description": "What is IN scope"
+        },
+        "excluded_scope": {
+          "type": "string",
+          "minLength": 5,
+          "description": "What is OUT of scope"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["LOW", "NORMAL", "HIGH", "URGENT"],
+          "default": "NORMAL",
+          "description": "Priority level (URGENT does not bypass controls)"
+        },
+        "deadline": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Optional deadline for response"
+        },
+        "permitted_sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "List of approved sources for this command"
+        },
+        "input_method": {
+          "type": "string",
+          "enum": ["NOTION_FORM", "STRUCTURED_PROMPT", "VOICE_NOTE"],
+          "description": "How the command was submitted"
+        },
+        "voice_verified": {
+          "type": ["boolean", "null"],
+          "description": "True if voice input was verified by owner"
+        },
+        "submitted_by": {
+          "type": "string",
+          "description": "Name/identifier of the submitter"
+        },
+        "submitted_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when command was submitted"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "DRAFT",
+            "RECEIVED",
+            "NEEDS_CLARIFICATION",
+            "SCOPE_CHECK",
+            "BLOCKED_SCOPE",
+            "SOURCE_CHECK",
+            "NEEDS_SOURCE_APPROVAL",
+            "CONTEXT_READY",
+            "ANALYSIS",
+            "VALIDATION",
+            "NEEDS_REVISION",
+            "READY_FOR_APPROVAL",
+            "APPROVED",
+            "REJECTED",
+            "ARCHIVED",
+            "ERROR"
+          ],
+          "description": "Current workflow status"
+        }
+      },
+      "additionalProperties": false
+    },
+    "evidence_item": {
+      "type": "object",
+      "title": "Evidence Item",
+      "description": "Single piece of evidence classified by source and type (from G5 section 14)",
+      "required": [
+        "evidence_id",
+        "command_id",
+        "classification",
+        "claim",
+        "source_type"
+      ],
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "pattern": "^GIC-\\d{8}-\\d{3}-E\\d{3}$",
+          "example": "GIC-20260903-001-E001",
+          "description": "Unique evidence identifier"
+        },
+        "command_id": {
+          "type": "string",
+          "pattern": "^GIC-\\d{8}-\\d{3}$",
+          "description": "Reference to parent command"
+        },
+        "classification": {
+          "type": "string",
+          "enum": [
+            "VERIFIED_SOURCE",
+            "OWNER_DECISION",
+            "OWNER_UNVERIFIED_FACT",
+            "EXTERNAL_RESEARCH",
+            "AI_INFERENCE",
+            "UNKNOWN"
+          ],
+          "description": "Evidence hierarchy classification (from G5 section 15)"
+        },
+        "claim": {
+          "type": "string",
+          "minLength": 5,
+          "description": "The factual statement being evidenced"
+        },
+        "source_name": {
+          "type": ["string", "null"],
+          "description": "Name of the source (from permitted sources list)"
+        },
+        "source_type": {
+          "type": "string",
+          "enum": [
+            "NOTION_PRIMARY",
+            "NOTION_SECONDARY",
+            "NOTION_REFERENCE",
+            "GITHUB_DOC",
+            "CHAT",
+            "SIGNED_PDF",
+            "OWNER_INPUT",
+            "OTHER"
+          ],
+          "description": "Type of source (from G5 section 16)"
+        },
+        "source_reference": {
+          "type": ["string", "null"],
+          "description": "Link, page ID, commit hash, or citation for the source"
+        },
+        "source_version": {
+          "type": ["string", "null"],
+          "description": "Version/date of source if applicable"
+        },
+        "retrieved_at": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Timestamp when evidence was retrieved"
+        },
+        "conflict_status": {
+          "type": "string",
+          "enum": ["UNRESOLVED", "RESOLVED_BY_PRECEDENCE", "RESOLVED_BY_OWNER"],
+          "default": "UNRESOLVED",
+          "description": "Whether this evidence conflicts with others"
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["HIGH", "MEDIUM", "LOW", "UNKNOWN"],
+          "description": "Confidence in the accuracy of this evidence"
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "description": "Additional context about the evidence"
+        }
+      },
+      "additionalProperties": false
+    },
+    "approval_record": {
+      "type": "object",
+      "title": "Approval Record",
+      "description": "Version-bound approval decision (from G5 section 29)",
+      "required": [
+        "approval_id",
+        "command_id",
+        "packet_version",
+        "decision",
+        "approver",
+        "timestamp"
+      ],
+      "properties": {
+        "approval_id": {
+          "type": "string",
+          "pattern": "^GIC-\\d{8}-\\d{3}-APR-\\d{3}$",
+          "description": "Unique approval identifier"
+        },
+        "command_id": {
+          "type": "string",
+          "pattern": "^GIC-\\d{8}-\\d{3}$",
+          "description": "Reference to specific command"
+        },
+        "packet_version": {
+          "type": "string",
+          "example": "v1",
+          "description": "Exact version of the approval packet (non-transitive)"
+        },
+        "decision": {
+          "type": "string",
+          "enum": ["APPROVED", "REVISE", "REJECTED"],
+          "description": "Owner decision on this specific packet version"
+        },
+        "approver": {
+          "type": "string",
+          "description": "Name/identifier of approver (must be Coach Sahid during pilot)"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Exact moment of approval decision"
+        },
+        "method": {
+          "type": "string",
+          "enum": ["SIGNED_PDF", "NOTION", "CHAT"],
+          "description": "How approval was registered"
+        },
+        "evidence_reference": {
+          "type": ["string", "null"],
+          "description": "Reference to supporting evidence brief"
+        },
+        "valid": {
+          "type": "boolean",
+          "description": "True if approval is still valid (becomes false if packet version superseded)"
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "description": "Any notes from the approver"
+        }
+      },
+      "additionalProperties": false
+    },
+    "audit_event": {
+      "type": "object",
+      "title": "Audit Event",
+      "description": "Immutable record of workflow transitions and decisions (from G5 section 39)",
+      "required": [
+        "event_id",
+        "timestamp",
+        "actor",
+        "event_type",
+        "result"
+      ],
+      "properties": {
+        "event_id": {
+          "type": "string",
+          "pattern": "^AUD-\\d{8}-\\d{6}-\\d{3}$",
+          "description": "Unique audit event identifier"
+        },
+        "command_id": {
+          "type": ["string", "null"],
+          "description": "Reference to command if applicable"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When event occurred"
+        },
+        "actor": {
+          "type": "string",
+          "enum": ["OWNER", "AI_OPERATOR", "SYSTEM"],
+          "description": "Who/what performed the action"
+        },
+        "event_type": {
+          "type": "string",
+          "enum": [
+            "COMMAND_RECEIVED",
+            "COMMAND_NORMALIZED",
+            "VOICE_VERIFIED",
+            "REQUIRED_FIELD_CHECK",
+            "SCOPE_CHECK",
+            "SOURCE_PERMISSION_CHECK",
+            "CONTEXT_RETRIEVED",
+            "EVIDENCE_REGISTER_CREATED",
+            "AI_REASONING_RUN",
+            "EVIDENCE_BRIEF_CREATED",
+            "VALIDATION_RUN",
+            "APPROVAL_PACKET_CREATED",
+            "OWNER_APPROVAL",
+            "OWNER_REVISION",
+            "OWNER_REJECTION",
+            "VERSION_SUPERSEDED",
+            "ROLLBACK",
+            "ERROR"
+          ],
+          "description": "Type of event (from G5 section 40)"
+        },
+        "object_type": {
+          "type": ["string", "null"],
+          "description": "Type of object affected (command, evidence, approval, etc.)"
+        },
+        "object_id": {
+          "type": ["string", "null"],
+          "description": "ID of object affected"
+        },
+        "version": {
+          "type": ["string", "null"],
+          "description": "Version of object at time of event"
+        },
+        "status_before": {
+          "type": ["string", "null"],
+          "description": "Status before this event"
+        },
+        "status_after": {
+          "type": ["string", "null"],
+          "description": "Status after this event"
+        },
+        "policy_rule": {
+          "type": ["string", "null"],
+          "description": "Policy rule that fired, if applicable"
+        },
+        "result": {
+          "type": "string",
+          "enum": ["SUCCESS", "BLOCKED", "REVISION_NEEDED", "AWAITING_OWNER", "ERROR"],
+          "description": "Outcome of the event"
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "description": "Additional context"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ai_run": {
+      "type": "object",
+      "title": "AI Run Record",
+      "description": "Instrumentation for each AI model invocation (from G5 section 38)",
+      "required": ["run_id", "command_id", "stage", "status"],
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "pattern": "^RUN-\\d{8}-\\d{6}-[A-Z0-9]{8}$",
+          "description": "Unique run identifier"
+        },
+        "command_id": {
+          "type": "string",
+          "description": "Reference to command being processed"
+        },
+        "stage": {
+          "type": "string",
+          "enum": [
+            "NORMALIZE",
+            "VALIDATE",
+            "ANALYZE_EVIDENCE",
+            "REASON",
+            "BRIEF",
+            "PACKET"
+          ],
+          "description": "Which workflow stage this run is for"
+        },
+        "model": {
+          "type": "string",
+          "description": "Model identifier/version used"
+        },
+        "input_tokens": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Number of input tokens consumed"
+        },
+        "output_tokens": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Number of output tokens generated"
+        },
+        "total_tokens": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Sum of input and output tokens"
+        },
+        "estimated_cost_usd": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "Estimated cost in USD (reference currency)"
+        },
+        "estimated_cost_xcg": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "description": "Estimated cost in XCG (primary currency)"
+        },
+        "duration_ms": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Execution duration in milliseconds"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["SUCCESS", "FAIL", "TIMEOUT"],
+          "description": "Run outcome"
+        },
+        "error_message": {
+          "type": ["string", "null"],
+          "description": "Error details if status is FAIL"
+        },
+        "started_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When run started"
+        },
+        "completed_at": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "When run completed"
+        }
+      },
+      "additionalProperties": false
+    },
+    "conflict_record": {
+      "type": "object",
+      "title": "Conflict Record",
+      "description": "Record of contradictions between evidence items (from G5 section 17)",
+      "required": [
+        "conflict_id",
+        "command_id",
+        "evidence_a",
+        "evidence_b",
+        "issue"
+      ],
+      "properties": {
+        "conflict_id": {
+          "type": "string",
+          "pattern": "^GIC-\\d{8}-\\d{3}-CFT-\\d{2}$",
+          "description": "Unique conflict identifier"
+        },
+        "command_id": {
+          "type": "string",
+          "description": "Reference to command"
+        },
+        "evidence_a": {
+          "type": "string",
+          "description": "ID of first conflicting evidence item"
+        },
+        "evidence_b": {
+          "type": "string",
+          "description": "ID of second conflicting evidence item"
+        },
+        "issue": {
+          "type": "string",
+          "description": "Description of the contradiction"
+        },
+        "precedence_rule_applied": {
+          "type": ["string", "null"],
+          "description": "Which source precedence rule resolved this, if any"
+        },
+        "resolution_status": {
+          "type": "string",
+          "enum": ["UNRESOLVED", "RESOLVED_BY_PRECEDENCE", "RESOLVED_BY_OWNER"],
+          "description": "How (or if) the conflict was resolved"
+        },
+        "owner_decision_required": {
+          "type": "boolean",
+          "description": "True if human judgment needed"
+        },
+        "owner_decision": {
+          "type": ["string", "null"],
+          "description": "Owner's chosen resolution if provided"
+        },
+        "noted_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When conflict was detected"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "owner_command": {
+      "$ref": "#/definitions/owner_command"
+    },
+    "evidence_item": {
+      "$ref": "#/definitions/evidence_item"
+    },
+    "approval_record": {
+      "$ref": "#/definitions/approval_record"
+    },
+    "audit_event": {
+      "$ref": "#/definitions/audit_event"
+    },
+    "ai_run": {
+      "$ref": "#/definitions/ai_run"
+    },
+    "conflict_record": {
+      "$ref": "#/definitions/conflict_record"
+    }
+  }
+}
