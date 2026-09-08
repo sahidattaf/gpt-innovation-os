@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "rm -rf .test-dist && tsc src/lib/discovery.ts src/lib/discovery.test.ts src/lib/lead-measurement.ts src/lib/lead-measurement.test.ts --outDir .test-dist --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck && node --test .test-dist/*.test.js && rm -rf .test-dist"
+    "test": "rm -rf .test-dist && tsc src/lib/discovery.ts src/lib/discovery.test.ts src/lib/lead-measurement.ts src/lib/lead-measurement.test.ts src/lib/video-series.ts src/lib/video-series.test.ts --outDir .test-dist --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck && node --test .test-dist/*.test.js && rm -rf .test-dist"
   },
   "dependencies": {
     "@gpt-os/ui": "workspace:*",
