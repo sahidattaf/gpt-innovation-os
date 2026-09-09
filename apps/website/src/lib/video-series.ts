@@ -1,4 +1,4 @@
-export type VideoStatus = "in-production" | "planned";
+export type VideoStatus = "ready" | "in-production" | "planned";
 
 export type VideoEpisode = {
   number: number;
@@ -15,6 +15,7 @@ export type VideoEpisode = {
   hook: string;
   duration: string;
   status: VideoStatus;
+  youtubeUrl?: string;
 };
 
 export const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@InnovationByAttaf";
@@ -23,14 +24,15 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
   {
     number: 1,
     slug: "practical-ai-curacao-business",
-    title: "What Practical AI Can Do for a Curaçao Business",
+    title: "Practical AI for Caribbean Businesses | Start Small, Save Time",
     shortTitle: "AI for real business",
     industry: "Business",
     summary:
       "Three useful ways AI can support everyday work without removing human approval.",
     hook: "AI should save your team time—not create more confusion.",
-    duration: "5 min",
-    status: "in-production",
+    duration: "4:58",
+    status: "ready",
+    youtubeUrl: "https://youtu.be/26vz2tGKAlk",
   },
   {
     number: 2,
