@@ -41,15 +41,26 @@ export default async function VideoEpisodePage({ params }: PageProps) {
                 </p>
               </div>
             </div>
-            <p className="mt-5 rounded-xl border border-stone-800 bg-stone-900/60 px-4 py-3 text-sm text-stone-400">
-              Video status:{" "}
-              <strong className="font-semibold text-amber-300">
-                {episode.status === "in-production"
-                  ? "in production"
-                  : "planned"}
-              </strong>
-              . The player will appear only after owner-approved publication.
-            </p>
+            {episode.youtubeUrl ? (
+              <a
+                href={episode.youtubeUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-5 inline-flex rounded-xl bg-amber-500 px-5 py-3 font-semibold text-stone-950 hover:bg-amber-400"
+              >
+                Watch Episode {episode.number} on YouTube ↗
+              </a>
+            ) : (
+              <p className="mt-5 rounded-xl border border-stone-800 bg-stone-900/60 px-4 py-3 text-sm text-stone-400">
+                Video status:{" "}
+                <strong className="font-semibold text-amber-300">
+                  {episode.status === "in-production"
+                    ? "in production"
+                    : "planned"}
+                </strong>
+                . The player will appear only after owner-approved publication.
+              </p>
+            )}
           </div>
           <aside>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-400">
