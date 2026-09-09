@@ -94,22 +94,22 @@ export default function HomePage() {
                     </svg>
                   </div>
                   <p className="max-w-md text-2xl font-bold leading-tight text-white sm:text-4xl">
-                    What practical AI can do for a Curaçao business
+                    Practical AI for Caribbean businesses
                   </p>
                 </div>
               </div>
               <div className="flex flex-col gap-3 border-t border-stone-800 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm text-stone-400">
-                  <strong className="text-amber-300">In production.</strong> No
-                  private client data.
+                  <strong className="text-amber-300">Episode 01 · 4:58.</strong>{" "}
+                  Start small. Keep people in control.
                 </p>
                 <a
-                  href={YOUTUBE_CHANNEL_URL}
+                  href={VIDEO_EPISODES[0]?.youtubeUrl ?? YOUTUBE_CHANNEL_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm font-semibold text-stone-100 hover:text-amber-300"
                 >
-                  YouTube channel ↗
+                  Watch Episode 01 ↗
                 </a>
               </div>
             </div>
