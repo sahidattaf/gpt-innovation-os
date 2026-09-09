@@ -16,9 +16,11 @@ export function VideoCard({ episode }: { episode: VideoEpisode }) {
               {episode.shortTitle}
             </p>
             <span className="mt-3 inline-flex rounded-full border border-stone-700 bg-stone-950/70 px-3 py-1 text-xs font-medium text-amber-300">
-              {episode.status === "in-production"
-                ? "In production"
-                : "Coming soon"}
+              {episode.status === "ready"
+                ? "Episode ready"
+                : episode.status === "in-production"
+                  ? "In production"
+                  : "Coming soon"}
             </span>
           </div>
         </div>
