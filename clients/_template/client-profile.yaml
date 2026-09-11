@@ -1,0 +1,44 @@
+schema_version: "1.0"
+client:
+  name: ""
+  industry: ""
+  location: ""
+  website: ""
+  status: "prospect"
+
+engagement:
+  package: "opportunity-scan"
+  stage: "qualification"
+  owner: ""
+  start_date: ""
+  target_date: ""
+
+business_context:
+  products_services: []
+  customer_segments: []
+  locations: []
+  channels: []
+  current_tools: []
+
+objectives:
+  primary_outcomes: []
+  baseline_metrics: []
+  success_metrics: []
+
+opportunities: []
+
+integrations:
+  notion_page_url: ""
+  supabase_project_ref: ""
+  vercel_project: ""
+
+security:
+  contains_personal_data: false
+  contains_financial_data: false
+  contains_credentials: false
+  restricted_data_location: ""
+
+notes:
+  # Never store secrets, customer lists, employee records, banking data,
+  # access tokens, or private operational datasets in this public repository.
+  public_safe_summary: ""

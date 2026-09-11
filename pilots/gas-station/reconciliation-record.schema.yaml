@@ -1,0 +1,108 @@
+version: 1
+name: gas-station-reconciliation-record
+purpose: Public-safe field contract for daily gas-station close and POS reconciliation.
+privacy:
+  store_real_values_in_public_repo: false
+  approved_runtime_locations:
+    - restricted_notion
+    - private_supabase
+human_approval_required_for:
+  - cash_adjustment
+  - refund
+  - write_off
+  - deposit_correction
+  - tolerance_change
+  - status_override
+fields:
+  record_id:
+    type: uuid
+    required: true
+  business_unit_id:
+    type: string
+    required: true
+  location_id:
+    type: string
+    required: true
+  business_date:
+    type: date
+    required: true
+  shift_id:
+    type: string
+    required: true
+  supervisor_id:
+    type: string
+    required: true
+  opening_float:
+    type: decimal
+    required: true
+  pos_total:
+    type: decimal
+    required: true
+  fuel_sales_total:
+    type: decimal
+    required: false
+  store_sales_total:
+    type: decimal
+    required: false
+  cash_sales:
+    type: decimal
+    required: true
+  card_sales:
+    type: decimal
+    required: true
+  other_payments:
+    type: decimal
+    required: true
+    default: 0
+  refunds:
+    type: decimal
+    required: true
+    default: 0
+  approved_paid_outs:
+    type: decimal
+    required: true
+    default: 0
+  physical_cash:
+    type: decimal
+    required: true
+  deposit_amount:
+    type: decimal
+    required: false
+  expected_cash:
+    type: decimal
+    computed: opening_float + cash_sales - refunds - approved_paid_outs
+  cash_variance:
+    type: decimal
+    computed: physical_cash - expected_cash
+  payment_variance:
+    type: decimal
+    computed: pos_total - (cash_sales + card_sales + other_payments)
+  status:
+    type: enum
+    values:
+      - green
+      - amber
+      - red
+    required: true
+  variance_explanation:
+    type: text
+    required_when: status != green
+  source_references:
+    type: list
+    item_type: string
+    required: true
+  reviewed_by:
+    type: string
+    required: false
+  reviewed_at:
+    type: datetime
+    required: false
+  created_at:
+    type: datetime
+    required: true
+validation_rules:
+  - pos_total must equal fuel_sales_total plus store_sales_total when both category totals are available
+  - source_references must not be empty
+  - amber and red records require a variance explanation
+  - red records require manager review
+  - no automated process may change financial source values
