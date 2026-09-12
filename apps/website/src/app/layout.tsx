@@ -11,12 +11,12 @@ export const metadata: Metadata = {
     template: "%s | GPT Innovation by Attaf",
   },
   description:
-    "Production-ready AI products for hospitality, real estate, marketing, and operations. Multilingual. Based in Curaçao.",
+    "Practical AI education, discovery and controlled pilot preparation for Caribbean businesses. Based in Curaçao.",
   icons: { icon: "/favicon.svg" },
   openGraph: {
     title: "GPT Innovation by Attaf — AI for Entrepreneurs",
     description:
-      "Production-ready AI for Caribbean and global entrepreneurs. Multilingual, practical, backed by hands-on support.",
+      "Practical AI demonstrations and a controlled Business AI Setup pilot from Curaçao.",
     type: "website",
     locale: "en_US",
   },
