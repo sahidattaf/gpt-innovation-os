@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { VIDEO_EPISODES, YOUTUBE_CHANNEL_URL } from "./video-series";
+import {
+  getYouTubeThumbnailUrl,
+  VIDEO_EPISODES,
+  WHATSAPP_URL,
+  YOUTUBE_CHANNEL_URL,
+} from "./video-series";
 
 test("the public video series contains nine uniquely numbered episodes", () => {
   assert.equal(VIDEO_EPISODES.length, 9);
@@ -30,12 +35,22 @@ test("all nine episodes link to the owner-supplied public videos", () => {
       "https://youtu.be/T9OXpXyWgh4",
     ],
   );
+  assert.equal(VIDEO_EPISODES.filter((episode) => episode.shortUrl).length, 5);
   assert.equal(
-    VIDEO_EPISODES.filter((episode) => episode.shortUrl).length,
-    5,
+    VIDEO_EPISODES.every((episode) => episode.youtubeId),
+    true,
   );
+  assert.equal(VIDEO_EPISODES.filter((episode) => episode.shortId).length, 5);
   assert.equal(
     VIDEO_EPISODES.every((episode) => episode.status === "ready"),
     true,
+  );
+});
+
+test("video hub contact and thumbnail URLs use approved destinations", () => {
+  assert.equal(WHATSAPP_URL, "https://wa.me/59995230683");
+  assert.equal(
+    getYouTubeThumbnailUrl("T9OXpXyWgh4"),
+    "https://i.ytimg.com/vi/T9OXpXyWgh4/hqdefault.jpg",
   );
 });
