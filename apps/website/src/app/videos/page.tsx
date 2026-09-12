@@ -7,8 +7,10 @@ import { VIDEO_EPISODES, YOUTUBE_CHANNEL_URL } from "@/lib/video-series";
 export const metadata: Metadata = {
   title: "AI Video Hub",
   description:
-    "Practical AI videos for Caribbean business owners by GPT Innovation by Attaf.",
+    "Nine practical AI videos and five Shorts for Caribbean business owners by GPT Innovation by Attaf.",
 };
+
+const VIDEO_SHORTS = VIDEO_EPISODES.filter((episode) => episode.shortUrl);
 
 export default function VideosPage() {
   return (
@@ -26,7 +28,8 @@ export default function VideosPage() {
             </h1>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-stone-400">
               Practical AI lessons for Curaçao and Caribbean operators—built
-              around real workflows, responsible use and clear owner decisions.
+              around useful workflows, responsible use and clear owner
+              decisions.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <DiscoveryLink
@@ -58,17 +61,70 @@ export default function VideosPage() {
                 id="series-heading"
                 className="mt-2 text-3xl font-bold text-stone-50"
               >
-                Eight practical AI conversations
+                Nine practical AI conversations
               </h2>
             </div>
             <p className="max-w-md text-sm leading-relaxed text-stone-500">
-              New episodes will be connected here only after owner approval and
-              public YouTube publication.
+              All nine full episodes are published on the GPT Innovation by
+              Attaf YouTube channel.
             </p>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {VIDEO_EPISODES.map((episode) => (
               <VideoCard key={episode.slug} episode={episode} />
+            ))}
+          </div>
+        </div>
+      </section>
+      <section
+        className="border-y border-stone-800 bg-stone-900/35 py-16 sm:py-20"
+        aria-labelledby="shorts-heading"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-400">
+              Quick lessons
+            </p>
+            <h2
+              id="shorts-heading"
+              className="mt-2 text-3xl font-bold text-stone-50"
+            >
+              Watch the AI Shorts
+            </h2>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-stone-500">
+              Short ideas from Episodes 5–9. Open any Short on YouTube, then
+              continue with its full episode guide.
+            </p>
+          </div>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {VIDEO_SHORTS.map((episode) => (
+              <article
+                key={episode.shortUrl}
+                className="rounded-2xl border border-stone-800 bg-stone-950 p-5"
+              >
+                <p className="text-xs font-semibold uppercase tracking-wider text-teal-400">
+                  Episode {episode.number} Short
+                </p>
+                <h3 className="mt-3 font-semibold leading-snug text-stone-100">
+                  {episode.shortTitle}
+                </h3>
+                <div className="mt-5 flex flex-col gap-2">
+                  <a
+                    href={episode.shortUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm font-semibold text-amber-400 hover:text-amber-300"
+                  >
+                    Watch Short ↗
+                  </a>
+                  <Link
+                    href={`/videos/${episode.slug}`}
+                    className="text-sm font-medium text-stone-400 hover:text-stone-100"
+                  >
+                    Full episode guide →
+                  </Link>
+                </div>
+              </article>
             ))}
           </div>
           <div className="mt-14 rounded-3xl border border-amber-500/20 bg-amber-500/[0.06] p-7 sm:flex sm:items-center sm:justify-between sm:p-10">
