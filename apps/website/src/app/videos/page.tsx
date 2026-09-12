@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { DiscoveryLink } from "@/components/discovery-link";
 import { VideoCard } from "@/components/video-card";
-import { VIDEO_EPISODES, YOUTUBE_CHANNEL_URL } from "@/lib/video-series";
+import {
+  getYouTubeThumbnailUrl,
+  VIDEO_EPISODES,
+  WHATSAPP_URL,
+  YOUTUBE_CHANNEL_URL,
+} from "@/lib/video-series";
 
 export const metadata: Metadata = {
   title: "AI Video Hub",
@@ -11,6 +17,10 @@ export const metadata: Metadata = {
 };
 
 const VIDEO_SHORTS = VIDEO_EPISODES.filter((episode) => episode.shortUrl);
+const FEATURED_EPISODE = VIDEO_EPISODES.find((episode) => episode.number === 9);
+const SERIES_EPISODES = VIDEO_EPISODES.filter(
+  (episode) => episode.number !== 9,
+);
 
 export default function VideosPage() {
   return (
@@ -46,10 +56,79 @@ export default function VideosPage() {
               >
                 Visit YouTube channel ↗
               </a>
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-xl border border-teal-500/50 px-5 py-3 text-sm font-semibold text-teal-300 hover:bg-teal-500/10"
+              >
+                Message Coach Sahid ↗
+              </a>
             </div>
           </div>
         </div>
       </section>
+      {FEATURED_EPISODE?.youtubeId && FEATURED_EPISODE.youtubeUrl ? (
+        <section
+          className="border-b border-stone-800 bg-stone-900/35 py-16 sm:py-20"
+          aria-labelledby="featured-episode-heading"
+        >
+          <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[1.15fr_0.85fr] lg:px-8">
+            <a
+              href={FEATURED_EPISODE.youtubeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative aspect-video overflow-hidden rounded-3xl border border-stone-700 bg-stone-950"
+            >
+              <Image
+                src={getYouTubeThumbnailUrl(FEATURED_EPISODE.youtubeId)}
+                alt={`YouTube thumbnail for ${FEATURED_EPISODE.title}`}
+                fill
+                priority
+                sizes="(min-width: 1024px) 58vw, 100vw"
+                className="object-cover transition duration-300 group-hover:scale-[1.02]"
+              />
+              <span className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent" />
+              <span className="absolute bottom-5 left-5 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-stone-950 shadow-lg">
+                <span aria-hidden="true" className="ml-0.5 text-xl">
+                  ▶
+                </span>
+                <span className="sr-only">Watch Episode 9</span>
+              </span>
+            </a>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400">
+                Newest episode · {FEATURED_EPISODE.duration}
+              </p>
+              <h2
+                id="featured-episode-heading"
+                className="mt-3 text-3xl font-bold text-stone-50 sm:text-4xl"
+              >
+                {FEATURED_EPISODE.title}
+              </h2>
+              <p className="mt-5 leading-relaxed text-stone-400">
+                {FEATURED_EPISODE.summary}
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <a
+                  href={FEATURED_EPISODE.youtubeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl bg-amber-500 px-5 py-3 text-sm font-semibold text-stone-950 hover:bg-amber-400"
+                >
+                  Watch Episode 9 ↗
+                </a>
+                <DiscoveryLink
+                  location="video_hub"
+                  className="rounded-xl border border-stone-700 px-5 py-3 text-sm font-semibold text-stone-100 hover:border-stone-500"
+                >
+                  Apply this to my business
+                </DiscoveryLink>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
       <section className="py-16 sm:py-20" aria-labelledby="series-heading">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -70,7 +149,7 @@ export default function VideosPage() {
             </p>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-            {VIDEO_EPISODES.map((episode) => (
+            {SERIES_EPISODES.map((episode) => (
               <VideoCard key={episode.slug} episode={episode} />
             ))}
           </div>
@@ -100,26 +179,38 @@ export default function VideosPage() {
             {VIDEO_SHORTS.map((episode) => (
               <article
                 key={episode.shortUrl}
-                className="rounded-2xl border border-stone-800 bg-stone-950 p-5"
+                className="group overflow-hidden rounded-2xl border border-stone-800 bg-stone-950"
               >
-                <p className="text-xs font-semibold uppercase tracking-wider text-teal-400">
-                  Episode {episode.number} Short
-                </p>
-                <h3 className="mt-3 font-semibold leading-snug text-stone-100">
-                  {episode.shortTitle}
-                </h3>
-                <div className="mt-5 flex flex-col gap-2">
+                {episode.shortId ? (
                   <a
                     href={episode.shortUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-semibold text-amber-400 hover:text-amber-300"
+                    className="relative block aspect-[9/16] overflow-hidden bg-stone-900"
                   >
-                    Watch Short ↗
+                    <Image
+                      src={getYouTubeThumbnailUrl(episode.shortId)}
+                      alt={`YouTube Short thumbnail for Episode ${episode.number}`}
+                      fill
+                      sizes="(min-width: 1280px) 20vw, (min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover transition duration-300 group-hover:scale-[1.03]"
+                    />
+                    <span className="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-stone-950/30" />
+                    <span className="absolute bottom-4 left-4 rounded-full bg-amber-500 px-3 py-1 text-xs font-bold text-stone-950">
+                      Watch Short ↗
+                    </span>
                   </a>
+                ) : null}
+                <div className="p-5">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-teal-400">
+                    Episode {episode.number} Short
+                  </p>
+                  <h3 className="mt-3 font-semibold leading-snug text-stone-100">
+                    {episode.shortTitle}
+                  </h3>
                   <Link
                     href={`/videos/${episode.slug}`}
-                    className="text-sm font-medium text-stone-400 hover:text-stone-100"
+                    className="mt-4 inline-flex text-sm font-medium text-stone-400 hover:text-stone-100"
                   >
                     Full episode guide →
                   </Link>
@@ -136,12 +227,22 @@ export default function VideosPage() {
                 That is where useful AI starts.
               </h2>
             </div>
-            <Link
-              href="/discovery"
-              className="mt-6 inline-flex rounded-xl bg-stone-50 px-5 py-3 text-sm font-semibold text-stone-950 hover:bg-white sm:mt-0"
-            >
-              Prepare your discovery →
-            </Link>
+            <div className="mt-6 flex flex-wrap gap-3 sm:mt-0 sm:justify-end">
+              <Link
+                href="/discovery"
+                className="inline-flex rounded-xl bg-stone-50 px-5 py-3 text-sm font-semibold text-stone-950 hover:bg-white"
+              >
+                Prepare your discovery →
+              </Link>
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex rounded-xl border border-teal-500/50 px-5 py-3 text-sm font-semibold text-teal-300 hover:bg-teal-500/10"
+              >
+                Message Coach Sahid ↗
+              </a>
+            </div>
           </div>
         </div>
       </section>
