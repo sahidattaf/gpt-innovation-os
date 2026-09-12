@@ -64,6 +64,13 @@ export type DiscoveryFormData = {
 
 export type DiscoveryFieldErrors = Partial<Record<keyof DiscoveryFormData, string>>;
 
+export type PilotFitResult = {
+  status: "potential_fit" | "discovery_first";
+  title: string;
+  summary: string;
+  checks: readonly string[];
+};
+
 export const INITIAL_DISCOVERY_FORM: DiscoveryFormData = {
   contactName: "",
   businessName: "",
@@ -119,6 +126,40 @@ export function validateDiscoveryForm(data: DiscoveryFormData): DiscoveryFieldEr
   }
 
   return errors;
+}
+
+export function assessPilotFit(data: DiscoveryFormData): PilotFitResult {
+  const canApprove =
+    data.decisionStatus === "I make the final decision" ||
+    data.decisionStatus === "The decision is shared";
+  const focusedPilot = data.investmentReadiness === "Ready for a focused pilot";
+  const hasTimeframe = data.urgency !== "Exploring";
+
+  if (canApprove && focusedPilot && hasTimeframe) {
+    return {
+      status: "potential_fit",
+      title: "Potential fit for a controlled pilot",
+      summary:
+        "Your answers suggest that a focused Business AI Setup pilot may be a useful next conversation. Final fit, scope and terms still require human review.",
+      checks: [
+        "One workflow is identified",
+        "A decision-maker can participate",
+        "A pilot timeframe is being considered",
+      ],
+    };
+  }
+
+  return {
+    status: "discovery_first",
+    title: "Discovery should come first",
+    summary:
+      "Your request is still useful. A short human review can clarify the workflow, decision process or timing before anyone discusses a pilot.",
+    checks: [
+      "Clarify the smallest workflow worth testing",
+      "Confirm who should review and approve the pilot",
+      "Agree on timing before discussing implementation",
+    ],
+  };
 }
 
 export function buildDiscoveryMessage(data: DiscoveryFormData): string {
