@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
+  assessPilotFit,
   buildDiscoveryMessage,
   buildDiscoveryWhatsAppUrl,
   INITIAL_DISCOVERY_FORM,
@@ -57,5 +58,23 @@ describe("WhatsApp discovery handoff", () => {
     const encodedMessage = url.split("?text=")[1];
     assert.ok(encodedMessage);
     assert.match(decodeURIComponent(encodedMessage ?? ""), /Name: Maria/);
+  });
+});
+
+describe("Business AI Setup pilot qualification", () => {
+  it("identifies a potential controlled-pilot fit without promising acceptance", () => {
+    const result = assessPilotFit(COMPLETE_FORM);
+    assert.equal(result.status, "potential_fit");
+    assert.match(result.summary, /Final fit, scope and terms still require human review/);
+  });
+
+  it("routes early-stage requests to discovery first", () => {
+    const result = assessPilotFit({
+      ...COMPLETE_FORM,
+      urgency: "Exploring",
+      investmentReadiness: "I need guidance",
+      decisionStatus: "I am researching for someone else",
+    });
+    assert.equal(result.status, "discovery_first");
   });
 });
