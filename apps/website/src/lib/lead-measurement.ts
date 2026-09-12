@@ -7,6 +7,8 @@ export const CTA_LOCATIONS = [
   "home_final",
   "video_hub",
   "video_episode",
+  "pilot",
+  "about",
   "contact",
   "footer",
 ] as const;
@@ -26,6 +28,14 @@ export type LeadMeasurementEvent =
   | {
       name: "whatsapp_continuation_selected";
       properties: { source: "discovery_review" };
+    }
+  | {
+      name: "pilot_fit_displayed";
+      properties: { result: "potential_fit" | "discovery_first" };
+    }
+  | {
+      name: "whatsapp_cta_selected";
+      properties: { cta_location: CtaLocation };
     };
 
 export type LeadMeasurementTransport = (

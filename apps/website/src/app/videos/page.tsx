@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { DiscoveryLink } from "@/components/discovery-link";
 import { VideoCard } from "@/components/video-card";
+import { WhatsAppLink } from "@/components/whatsapp-link";
 import {
   getYouTubeThumbnailUrl,
   VIDEO_EPISODES,
@@ -56,14 +57,15 @@ export default function VideosPage() {
               >
                 Visit YouTube channel ↗
               </a>
-              <a
+              <WhatsAppLink
+                location="video_hub"
                 href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-xl border border-teal-500/50 px-5 py-3 text-sm font-semibold text-teal-300 hover:bg-teal-500/10"
               >
                 Message Coach Sahid ↗
-              </a>
+              </WhatsAppLink>
             </div>
           </div>
         </div>
@@ -234,14 +236,15 @@ export default function VideosPage() {
               >
                 Prepare your discovery →
               </Link>
-              <a
+              <WhatsAppLink
+                location="video_hub"
                 href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex rounded-xl border border-teal-500/50 px-5 py-3 text-sm font-semibold text-teal-300 hover:bg-teal-500/10"
               >
                 Message Coach Sahid ↗
-              </a>
+              </WhatsAppLink>
             </div>
           </div>
         </div>

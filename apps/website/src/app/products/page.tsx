@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { DiscoveryLink } from "@/components/discovery-link";
 import { BUSINESS_CONTACT } from "@/lib/contact";
+import { WhatsAppLink } from "@/components/whatsapp-link";
 
 export const metadata: Metadata = {
   title: "Business AI Setup Pilot",
@@ -64,8 +65,8 @@ export default function ProductsPage() {
           <h2 className="text-3xl font-bold text-stone-50">Start with your business problem</h2>
           <p className="mx-auto mt-4 max-w-2xl leading-relaxed text-stone-400">Prepare a private discovery request, review it yourself, then decide whether to continue on WhatsApp.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <DiscoveryLink location="contact" className="rounded-xl bg-amber-500 px-6 py-3 text-sm font-semibold text-stone-950 hover:bg-amber-400">Start AI Discovery</DiscoveryLink>
-            <a href={BUSINESS_CONTACT.whatsappHref} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-stone-700 px-6 py-3 text-sm font-semibold text-stone-100 hover:border-stone-500 hover:bg-stone-900">Message Coach Sahid</a>
+            <DiscoveryLink location="pilot" className="rounded-xl bg-amber-500 px-6 py-3 text-sm font-semibold text-stone-950 hover:bg-amber-400">Check pilot fit</DiscoveryLink>
+            <WhatsAppLink location="pilot" href={BUSINESS_CONTACT.whatsappHref} target="_blank" rel="noopener noreferrer" className="rounded-xl border border-stone-700 px-6 py-3 text-sm font-semibold text-stone-100 hover:border-stone-500 hover:bg-stone-900">Message Coach Sahid</WhatsAppLink>
             <Link href="/videos" className="px-4 py-3 text-sm font-semibold text-amber-300 hover:text-amber-200">Watch the demonstrations →</Link>
           </div>
         </div>

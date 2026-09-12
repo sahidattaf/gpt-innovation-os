@@ -65,11 +65,29 @@ describe("lead measurement allowlist", () => {
       transport,
       "production",
     );
+    sendLeadMeasurement(
+      {
+        name: "pilot_fit_displayed",
+        properties: { result: "potential_fit" },
+      },
+      transport,
+      "production",
+    );
+    sendLeadMeasurement(
+      {
+        name: "whatsapp_cta_selected",
+        properties: { cta_location: "pilot" },
+      },
+      transport,
+      "production",
+    );
 
     assert.deepEqual(calls, [
       ["intake_started", undefined],
       ["validation_completed", { result: "valid" }],
       ["whatsapp_continuation_selected", { source: "discovery_review" }],
+      ["pilot_fit_displayed", { result: "potential_fit" }],
+      ["whatsapp_cta_selected", { cta_location: "pilot" }],
     ]);
   });
 });

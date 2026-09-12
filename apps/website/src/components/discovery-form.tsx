@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import type { FormEvent } from "react";
 import {
+  assessPilotFit,
   buildDiscoveryWhatsAppUrl,
   DISCOVERY_OPTIONS,
   INITIAL_DISCOVERY_FORM,
@@ -69,6 +70,7 @@ export function DiscoveryForm() {
   const [form, setForm] = useState<DiscoveryFormData>(INITIAL_DISCOVERY_FORM);
   const [errors, setErrors] = useState<DiscoveryFieldErrors>({});
   const [reviewing, setReviewing] = useState(false);
+  const [handoffStarted, setHandoffStarted] = useState(false);
   const measuredMilestones = useRef(new Set<string>());
 
   const measureOnce = (event: Parameters<typeof sendLeadMeasurement>[0]) => {
@@ -100,9 +102,14 @@ export function DiscoveryForm() {
     setErrors(nextErrors);
 
     if (Object.keys(nextErrors).length === 0) {
+      const assessment = assessPilotFit(form);
       measureOnce({
         name: "validation_completed",
         properties: { result: "valid" },
+      });
+      measureOnce({
+        name: "pilot_fit_displayed",
+        properties: { result: assessment.status },
       });
       setReviewing(true);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -111,6 +118,7 @@ export function DiscoveryForm() {
 
   if (reviewing) {
     const whatsappUrl = buildDiscoveryWhatsAppUrl(form);
+    const assessment = assessPilotFit(form);
     const reviewRows = [
       ["Name", form.contactName],
       ["Business", form.businessName],
@@ -127,9 +135,29 @@ export function DiscoveryForm() {
       ["Decision status", form.decisionStatus],
     ].filter(([, value]) => value);
 
+    if (handoffStarted) {
+      return (
+        <section aria-labelledby="handoff-heading" className="rounded-2xl border border-teal-500/30 bg-teal-500/5 p-6 sm:p-8">
+          <p className="text-xs font-semibold uppercase tracking-widest text-teal-400">Step 3 of 3</p>
+          <h2 id="handoff-heading" className="mt-2 text-2xl font-bold text-stone-50">Your WhatsApp draft is ready</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-stone-300">
+            Thank you for preparing your request. WhatsApp should have opened in a separate tab. Nothing has been sent by this website—you still control the final send.
+          </p>
+          <div className="mt-6 rounded-xl border border-stone-800 bg-stone-950/70 p-4">
+            <p className="text-sm font-semibold text-stone-100">What happens after you choose Send?</p>
+            <p className="mt-2 text-sm leading-relaxed text-stone-400">Coach Sahid can review the request and decide whether discovery or a controlled pilot discussion is the appropriate next step. This does not confirm scope, pricing, booking or delivery.</p>
+          </div>
+          <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
+            <button type="button" onClick={() => { setHandoffStarted(false); setReviewing(false); }} className="rounded-xl border border-stone-700 px-5 py-3 text-sm font-semibold text-stone-200 hover:bg-stone-800">Edit request</button>
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="rounded-xl bg-teal-400 px-5 py-3 text-center text-sm font-semibold text-stone-950 hover:bg-teal-300">Open WhatsApp draft again</a>
+          </div>
+        </section>
+      );
+    }
+
     return (
       <section aria-labelledby="review-heading" className="rounded-2xl border border-stone-800 bg-stone-900/60 p-6 sm:p-8">
-        <p className="text-xs font-semibold uppercase tracking-widest text-amber-500">Step 2 of 2</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-amber-500">Step 2 of 3</p>
         <h2 id="review-heading" className="mt-2 text-2xl font-bold text-stone-50">
           Review your discovery request
         </h2>
@@ -137,6 +165,14 @@ export function DiscoveryForm() {
           Nothing has been sent or stored. Continuing opens WhatsApp with this information in a
           draft. You decide whether to send it.
         </p>
+        <div className={`mt-6 rounded-xl border p-5 ${assessment.status === "potential_fit" ? "border-teal-500/30 bg-teal-500/5" : "border-amber-500/25 bg-amber-500/5"}`}>
+          <p className="text-xs font-semibold uppercase tracking-widest text-stone-400">Preliminary qualification</p>
+          <h3 className="mt-2 text-lg font-semibold text-stone-50">{assessment.title}</h3>
+          <p className="mt-2 text-sm leading-relaxed text-stone-400">{assessment.summary}</p>
+          <ul className="mt-4 space-y-2 text-sm text-stone-300">
+            {assessment.checks.map((check) => <li key={check}>✓ {check}</li>)}
+          </ul>
+        </div>
         <dl className="mt-8 divide-y divide-stone-800 rounded-xl border border-stone-800">
           {reviewRows.map(([label, value]) => (
             <div key={label} className="grid gap-1 px-4 py-3 sm:grid-cols-[11rem_1fr]">
@@ -157,12 +193,13 @@ export function DiscoveryForm() {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() =>
+            onClick={() => {
               measureOnce({
                 name: "whatsapp_continuation_selected",
                 properties: { source: "discovery_review" },
-              })
-            }
+              });
+              setHandoffStarted(true);
+            }}
             className="rounded-xl bg-amber-500 px-5 py-3 text-center text-sm font-semibold text-stone-950 hover:bg-amber-400"
           >
             Continue to WhatsApp
@@ -174,11 +211,11 @@ export function DiscoveryForm() {
 
   return (
     <form onSubmit={handleReview} noValidate className="rounded-2xl border border-stone-800 bg-stone-900/60 p-6 sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-widest text-amber-500">Step 1 of 2</p>
-      <h2 className="mt-2 text-2xl font-bold text-stone-50">Tell us what you want to improve</h2>
+      <p className="text-xs font-semibold uppercase tracking-widest text-amber-500">Step 1 of 3</p>
+      <h2 className="mt-2 text-2xl font-bold text-stone-50">Check your Business AI Setup pilot fit</h2>
       <p className="mt-3 text-sm leading-relaxed text-stone-400">
-        Your answers stay in this browser until you choose to continue to WhatsApp. They are not
-        submitted to this website or added to a CRM.
+        Describe one workflow, your timing and decision role. Your answers stay in this browser and
+        are not submitted to this website or added to a CRM.
       </p>
 
       {Object.keys(errors).length > 0 ? (
@@ -279,7 +316,7 @@ export function DiscoveryForm() {
         type="submit"
         className="mt-8 w-full rounded-xl bg-amber-500 px-5 py-3 text-sm font-semibold text-stone-950 hover:bg-amber-400 sm:w-auto"
       >
-        Review discovery request
+        Review answers and pilot fit
       </button>
     </form>
   );

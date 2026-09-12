@@ -43,7 +43,7 @@ export default function AboutPage() {
       <section className="border-t border-stone-800 bg-stone-900/40 py-16">
         <div className="mx-auto max-w-4xl px-4 text-center sm:px-6">
           <h2 className="text-3xl font-bold text-stone-50">See the work before starting a conversation</h2>
-          <div className="mt-8 flex flex-wrap justify-center gap-3"><Link href="/videos" className="rounded-xl border border-stone-700 px-6 py-3 text-sm font-semibold text-stone-100 hover:bg-stone-800">Watch the series</Link><DiscoveryLink location="footer" className="rounded-xl bg-amber-500 px-6 py-3 text-sm font-semibold text-stone-950 hover:bg-amber-400">Start AI Discovery</DiscoveryLink></div>
+          <div className="mt-8 flex flex-wrap justify-center gap-3"><Link href="/videos" className="rounded-xl border border-stone-700 px-6 py-3 text-sm font-semibold text-stone-100 hover:bg-stone-800">Watch the series</Link><DiscoveryLink location="about" className="rounded-xl bg-amber-500 px-6 py-3 text-sm font-semibold text-stone-950 hover:bg-amber-400">Start AI Discovery</DiscoveryLink></div>
         </div>
       </section>
     </>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BUSINESS_CONTACT } from "@/lib/contact";
+import { WhatsAppLink } from "@/components/whatsapp-link";
 
 const LINKS = [
   { label: "AI Video Hub", href: "/videos" },
@@ -23,7 +24,7 @@ export function SiteFooter() {
           </div>
           <div>
             <h2 className="text-xs font-semibold uppercase tracking-widest text-stone-400">Contact</h2>
-            <a href={BUSINESS_CONTACT.whatsappHref} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-sm font-medium text-amber-400 hover:text-amber-300">WhatsApp {BUSINESS_CONTACT.whatsappDisplay}</a>
+            <WhatsAppLink location="footer" href={BUSINESS_CONTACT.whatsappHref} target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-sm font-medium text-amber-400 hover:text-amber-300">WhatsApp {BUSINESS_CONTACT.whatsappDisplay}</WhatsAppLink>
             <p className="mt-3 text-xs leading-relaxed text-stone-600">A message does not confirm a booking, scope, price or delivery commitment.</p>
           </div>
         </div>
