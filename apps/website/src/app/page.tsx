@@ -119,9 +119,9 @@ export default function HomePage() {
       <section className="border-b border-stone-800 bg-stone-900/35 py-7">
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-5 px-4 sm:px-6 md:grid-cols-4 lg:px-8">
           {[
-            "EN · PAP · NL · ES",
+            "Multilingual examples",
             "Owner-approved actions",
-            "Privacy-aware discovery",
+            "Private discovery preparation",
             "Built in Curaçao",
           ].map((item) => (
             <p
@@ -167,13 +167,13 @@ export default function HomePage() {
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-teal-400">
-            Industry experience
+            Demonstration library
           </p>
           <h2
             id="industries-heading"
             className="mt-2 max-w-2xl text-3xl font-bold text-stone-50"
           >
-            AI built around how your business actually operates
+            Examples built around familiar business workflows
           </h2>
           <div className="mt-10 grid gap-px overflow-hidden rounded-2xl border border-stone-800 bg-stone-800 sm:grid-cols-2 lg:grid-cols-4">
             {INDUSTRIES.map((industry) => (

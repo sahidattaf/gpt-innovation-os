@@ -6,10 +6,8 @@ import { DiscoveryLink } from "@/components/discovery-link";
 
 const NAV_LINKS = [
   { label: "Videos", href: "/videos" },
-  { label: "Products", href: "/products" },
-  { label: "Open EU", href: "/open-eu" },
+  { label: "Business AI Pilot", href: "/products" },
   { label: "About", href: "/about" },
-  { label: "AI Discovery", href: "/discovery" },
 ] as const;
 
 export function SiteHeader() {
