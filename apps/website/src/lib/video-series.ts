@@ -16,11 +16,18 @@ export type VideoEpisode = {
   hook: string;
   duration: string;
   status: VideoStatus;
+  youtubeId?: string;
   youtubeUrl?: string;
+  shortId?: string;
   shortUrl?: string;
 };
 
 export const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@InnovationByAttaf";
+export const WHATSAPP_URL = "https://wa.me/59995230683";
+
+export function getYouTubeThumbnailUrl(videoId: string) {
+  return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+}
 
 export const VIDEO_EPISODES: readonly VideoEpisode[] = [
   {
@@ -34,6 +41,7 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     hook: "AI should save your team time—not create more confusion.",
     duration: "4:58",
     status: "ready",
+    youtubeId: "26vz2tGKAlk",
     youtubeUrl: "https://youtu.be/26vz2tGKAlk",
   },
   {
@@ -47,6 +55,7 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     hook: "If your team repeats it every day, it may be ready for a better workflow.",
     duration: "5:00",
     status: "ready",
+    youtubeId: "mkIj0Ulnf9g",
     youtubeUrl: "https://youtu.be/mkIj0Ulnf9g",
   },
   {
@@ -60,6 +69,7 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     hook: "The best AI project starts with one expensive business problem.",
     duration: "4:43",
     status: "ready",
+    youtubeId: "-hUVW8BBq5w",
     youtubeUrl: "https://youtu.be/-hUVW8BBq5w",
   },
   {
@@ -73,6 +83,7 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     hook: "The same answer should not live in five different places.",
     duration: "Full episode",
     status: "ready",
+    youtubeId: "FdmVwhnunlc",
     youtubeUrl: "https://youtu.be/FdmVwhnunlc",
   },
   {
@@ -86,7 +97,9 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     hook: "Fast guest service begins before the guest repeats the question.",
     duration: "Full episode",
     status: "ready",
+    youtubeId: "yC_zqVd5xQQ",
     youtubeUrl: "https://youtu.be/yC_zqVd5xQQ",
+    shortId: "gGNKZCbhzew",
     shortUrl: "https://youtube.com/shorts/gGNKZCbhzew",
   },
   {
@@ -100,7 +113,9 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     hook: "More inquiries do not automatically mean better buyers.",
     duration: "4:34",
     status: "ready",
+    youtubeId: "bv7iZ2SBtNw",
     youtubeUrl: "https://youtu.be/bv7iZ2SBtNw",
+    shortId: "mCryDosbiI0",
     shortUrl: "https://youtube.com/shorts/mCryDosbiI0",
   },
   {
@@ -114,7 +129,9 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     hook: "A faster rental response should still be accurate, reviewed and controlled.",
     duration: "4:38",
     status: "ready",
+    youtubeId: "ll_YpSKriXw",
     youtubeUrl: "https://youtu.be/ll_YpSKriXw",
+    shortId: "Wb0OxhrVe5Y",
     shortUrl: "https://youtube.com/shorts/Wb0OxhrVe5Y",
   },
   {
@@ -128,7 +145,9 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     hook: "A dashboard is useful only when the information can be trusted.",
     duration: "4:35",
     status: "ready",
+    youtubeId: "cv9IefEpplA",
     youtubeUrl: "https://youtu.be/cv9IefEpplA",
+    shortId: "mdSLRDSO0Cs",
     shortUrl: "https://youtube.com/shorts/mdSLRDSO0Cs",
   },
   {
@@ -142,7 +161,9 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     hook: "Do not automate everything. Fix one workflow that matters.",
     duration: "3:41",
     status: "ready",
+    youtubeId: "T9OXpXyWgh4",
     youtubeUrl: "https://youtu.be/T9OXpXyWgh4",
+    shortId: "TAP4DxsZsGY",
     shortUrl: "https://youtube.com/shorts/TAP4DxsZsGY",
   },
 ] as const;
