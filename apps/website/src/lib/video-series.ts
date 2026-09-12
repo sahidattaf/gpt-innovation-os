@@ -10,12 +10,14 @@ export type VideoEpisode = {
     | "Restaurants"
     | "Hotels"
     | "Real Estate"
+    | "Car Rental"
     | "Operations";
   summary: string;
   hook: string;
   duration: string;
   status: VideoStatus;
   youtubeUrl?: string;
+  shortUrl?: string;
 };
 
 export const YOUTUBE_CHANNEL_URL = "https://www.youtube.com/@InnovationByAttaf";
@@ -43,8 +45,9 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     summary:
       "A practical review of repeat work that may be ready for an AI-assisted workflow.",
     hook: "If your team repeats it every day, it may be ready for a better workflow.",
-    duration: "5 min",
-    status: "planned",
+    duration: "5:00",
+    status: "ready",
+    youtubeUrl: "https://youtu.be/mkIj0Ulnf9g",
   },
   {
     number: 3,
@@ -55,8 +58,9 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     summary:
       "A privacy-aware walkthrough from business problem to an owner-controlled next step.",
     hook: "The best AI project starts with one expensive business problem.",
-    duration: "5 min",
-    status: "planned",
+    duration: "4:43",
+    status: "ready",
+    youtubeUrl: "https://youtu.be/-hUVW8BBq5w",
   },
   {
     number: 4,
@@ -67,8 +71,9 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     summary:
       "Five restaurant workflows where verified information and manager review matter.",
     hook: "The same answer should not live in five different places.",
-    duration: "5 min",
-    status: "planned",
+    duration: "Full episode",
+    status: "ready",
+    youtubeUrl: "https://youtu.be/FdmVwhnunlc",
   },
   {
     number: 5,
@@ -79,8 +84,10 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     summary:
       "Multilingual guest support, handovers and reporting with authorized human review.",
     hook: "Fast guest service begins before the guest repeats the question.",
-    duration: "5 min",
-    status: "planned",
+    duration: "Full episode",
+    status: "ready",
+    youtubeUrl: "https://youtu.be/yC_zqVd5xQQ",
+    shortUrl: "https://youtube.com/shorts/gGNKZCbhzew",
   },
   {
     number: 6,
@@ -91,11 +98,27 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     summary:
       "Organize inquiries and follow-up without inventing availability, prices or returns.",
     hook: "More inquiries do not automatically mean better buyers.",
-    duration: "5 min",
-    status: "planned",
+    duration: "4:34",
+    status: "ready",
+    youtubeUrl: "https://youtu.be/bv7iZ2SBtNw",
+    shortUrl: "https://youtube.com/shorts/mCryDosbiI0",
   },
   {
     number: 7,
+    slug: "ai-car-rental-workflow",
+    title: "AI for Car Rental: From Booking Inquiry to Vehicle Return",
+    shortTitle: "Smarter car-rental service",
+    industry: "Car Rental",
+    summary:
+      "Organize booking questions, renter details and vehicle-return follow-up with human approval.",
+    hook: "A faster rental response should still be accurate, reviewed and controlled.",
+    duration: "4:38",
+    status: "ready",
+    youtubeUrl: "https://youtu.be/ll_YpSKriXw",
+    shortUrl: "https://youtube.com/shorts/Wb0OxhrVe5Y",
+  },
+  {
+    number: 8,
     slug: "notion-owner-command-center",
     title: "Turn Notion into an Owner Command Center",
     shortTitle: "Your business command center",
@@ -103,19 +126,23 @@ export const VIDEO_EPISODES: readonly VideoEpisode[] = [
     summary:
       "Organize trusted decisions, tasks, risks, SOPs and KPIs in one operating view.",
     hook: "A dashboard is useful only when the information can be trusted.",
-    duration: "6 min",
-    status: "planned",
+    duration: "4:35",
+    status: "ready",
+    youtubeUrl: "https://youtu.be/cv9IefEpplA",
+    shortUrl: "https://youtube.com/shorts/mdSLRDSO0Cs",
   },
   {
-    number: 8,
+    number: 9,
     slug: "30-day-ai-plan",
-    title: "My 30-Day AI Plan for a Small Caribbean Business",
+    title: "Your First 30 Days with AI: 4 Simple Steps",
     shortTitle: "Your 30-day AI plan",
     industry: "Business",
     summary:
       "A four-week path to identify, prototype, test and evaluate one useful workflow.",
     hook: "Do not automate everything. Fix one workflow that matters.",
-    duration: "5 min",
-    status: "planned",
+    duration: "3:41",
+    status: "ready",
+    youtubeUrl: "https://youtu.be/T9OXpXyWgh4",
+    shortUrl: "https://youtube.com/shorts/TAP4DxsZsGY",
   },
 ] as const;
