@@ -151,7 +151,7 @@ export default function HomePage() {
               href="/videos"
               className="text-sm font-semibold text-amber-400 hover:text-amber-300"
             >
-              Explore all eight episodes →
+              Explore all nine episodes →
             </Link>
           </div>
           <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
