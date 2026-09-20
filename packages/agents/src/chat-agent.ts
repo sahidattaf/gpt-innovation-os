@@ -1,10 +1,7 @@
 import { createAgent } from "./runner";
-
-const SYSTEM_PROMPT = `You are a helpful AI assistant for GPT Innovation OS.
-You help entrepreneurs discover, purchase, and operate AI-powered GPT products.
-Be concise, practical, and action-oriented. Always suggest next steps.`;
+import { CHAT_SYSTEM_PROMPT } from "@gpt-os/prompts";
 
 export const chatAgent = createAgent({
-  systemPrompt: SYSTEM_PROMPT,
-  maxTokens: 2048,
+  systemPrompt: CHAT_SYSTEM_PROMPT,
+  maxTokens: 512,
 });

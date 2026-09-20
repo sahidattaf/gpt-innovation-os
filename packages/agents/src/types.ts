@@ -16,3 +16,8 @@ export interface AgentResponse {
   outputTokens: number;
   model: string;
 }
+
+export interface AgentRunOptions {
+  signal?: AbortSignal;
+  maxTokens?: number;
+}
