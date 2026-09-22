@@ -1,10 +1,10 @@
 # GPTI Lead MVP — Conversion Measurement and Notion Intake SOP
 
 **Gate:** GPTI-LEAD-MVP-4  
-**Status:** Specification approved; implementation not authorized  
+**Status:** Reconciled with production measurement contract
 **Owner:** Coach Sahid  
-**Version:** 1.0  
-**Date:** 2026-09-02
+**Version:** 1.1
+**Date:** 2026-09-13
 
 ## 1. Purpose
 
@@ -25,10 +25,14 @@ Event names and properties are allowlisted. Any property not listed here is proh
 
 | Event | Trigger | Allowed properties | Interpretation |
 |---|---|---|---|
-| `discovery_cta_selected` | A visitor selects a discovery CTA | `cta_location`: `header`, `home`, `contact`, or `footer` | Interest in opening discovery |
+| `discovery_cta_selected` | A visitor selects a discovery CTA | `cta_location`: one approved value from the location allowlist below | Interest in opening discovery |
 | `intake_started` | First interaction with the discovery form | None | Form engagement |
 | `validation_completed` | Visitor successfully reaches review | `result`: `valid` only | A valid client-side review was produced |
 | `whatsapp_continuation_selected` | Visitor selects Continue to WhatsApp | `source`: `discovery_review` | WhatsApp draft opened; send not confirmed |
+| `pilot_fit_displayed` | A valid review displays a preliminary fit result | `result`: `potential_fit` or `discovery_first` | Interface guidance only; never an owner qualification decision |
+| `whatsapp_cta_selected` | A visitor selects a general WhatsApp CTA | `cta_location`: one approved value from the location allowlist below | Interest in opening WhatsApp; send not confirmed |
+
+Approved `cta_location` values: `header`, `home`, `home_video`, `home_final`, `video_hub`, `video_episode`, `pilot`, `about`, `contact`, and `footer`.
 
 ### Event rules
 
@@ -37,6 +41,7 @@ Event names and properties are allowlisted. Any property not listed here is proh
 - Do not attach form values, field names, free text, phone numbers, names, business names, roles, locations, URLs, query strings, user IDs, device fingerprints, or persistent cross-site identifiers.
 - Do not derive audience segments from intake answers.
 - Do not log the generated WhatsApp message.
+- Do not treat `pilot_fit_displayed` as a qualified opportunity, owner decision, proposal approval, or delivery authorization.
 - Development and preview events must be excluded from production reporting.
 - Provider selection and installation require a separate implementation gate.
 - A privacy/legal review is required before activation; this specification does not decide whether consent tooling is legally required.
@@ -111,13 +116,13 @@ Do not store passwords, API keys, payment data, guest/customer data, government 
 |---|---|
 | Coach Sahid | Verify conversations, qualify prospects, create/update Notion opportunities, approve stages and outbound actions |
 | AI Operator | Prepare a draft summary or checklist for owner review; never create a real opportunity or contact a prospect under this gate |
-| Website | Prepare the WhatsApp draft and, after a later gate, emit only allowlisted anonymous events |
-| Analytics provider | Aggregate allowlisted production events only; provider and configuration are not yet approved |
+| Website | Prepare the WhatsApp draft and emit only the production allowlist documented above |
+| Analytics provider | Vercel Analytics; aggregate allowlisted production events only |
 | Notion | Hold owner-verified operational opportunity records; not a website submission endpoint |
 
 ## 7. Acceptance criteria for a future implementation
 
-- All four allowlisted events fire at the defined milestones and only once per page lifecycle.
+- All six allowlisted events fire at the defined milestones and only once per page lifecycle.
 - No intake value or generated message appears in analytics payloads, logs, URLs, cookies, local storage, or session storage.
 - Preview/development traffic is excluded from production reports.
 - The UI never claims a WhatsApp message was sent.
