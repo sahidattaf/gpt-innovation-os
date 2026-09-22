@@ -1,0 +1,27 @@
+{
+  "name": "GPT Innovation by Attaf — eSignature POC TEST",
+  "mode": "test_only",
+  "workflow": "founding-pilot-poc",
+  "document_classification": "synthetic",
+  "embedded_signing": true,
+  "production_requests_allowed": false,
+  "real_signer_data_allowed": false,
+  "investor_documents_allowed": false,
+  "callback": {
+    "url": "https://<protected-preview-host>/api/integrations/dropbox-sign/callback",
+    "verification_required": true,
+    "idempotency_required": true
+  },
+  "branding_design_only": {
+    "brand_name": "GPT Innovation by Attaf",
+    "premium_branding_enabled": false,
+    "notes": "Colors/logo are design targets only. Do not purchase or enable Premium Branding under GPTI-ESIGN-POC-1."
+  },
+  "required_environment": {
+    "DROPBOX_SIGN_API_KEY": "<server-secret-not-in-git>",
+    "DROPBOX_SIGN_CLIENT_ID": "<test-app-client-id>",
+    "DROPBOX_SIGN_TEST_MODE": "true",
+    "DROPBOX_SIGN_CALLBACK_URL": "https://<protected-preview-host>/api/integrations/dropbox-sign/callback",
+    "DROPBOX_SIGN_APP_BASE_URL": "https://<protected-preview-host>"
+  }
+}
