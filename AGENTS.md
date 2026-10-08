@@ -4,7 +4,7 @@
 **Path**: `C:\Users\sahid\gpt-innovation-os`
 **Owner**: Sahid Attaf (sahidattaf@gmail.com)
 **GitHub**: `sahidattaf/gpt-innovation-os`
-**Last updated**: 2026-06-15
+**Last updated**: 2026-10-08
 
 This file is the project-specific governance document for GPT Innovation OS.
 It complements (and does not replace) [CLAUDE.md](CLAUDE.md), which holds
@@ -84,11 +84,21 @@ explicitly approved:
 13. Secure multi-tenant delivery
 14. Partner and reseller enablement
 
-**Current state (2026-06-15)**: Repo is at infrastructure/deployment-automation stage
-(priority 10). `apps/website` and `apps/chatbot-widget` are deployed to Vercel.
-Catalogue, lead capture, demo booking, proposals, and onboarding flows (priorities 1–5)
-are not yet implemented in code — `apps/storefront` and `apps/command-center` are
-scaffolds only.
+**Current state (2026-10-08)**: `apps/website` and `apps/chatbot-widget` are deployed
+to Vercel. Priorities 1–2 are partly implemented in `apps/website`:
+
+- **Offer (priority 1)**: `/products` presents a single Business AI Setup pilot with no
+  published price. It is not a multi-product catalogue.
+- **Lead capture and qualification (priority 2)**: `/discovery` is a client-side
+  qualification form (`src/lib/discovery.ts`) with validation and a preliminary
+  pilot-fit result. The visitor reviews the answers and then chooses whether to open a
+  pre-filled WhatsApp draft. `/contact` links to the form and to WhatsApp directly.
+  There are no API routes and no server-side storage, email or CRM — answers stay in
+  the browser until the visitor opens WhatsApp.
+- **Measurement**: `src/lib/lead-measurement.ts` sends Vercel Analytics events,
+  in production only.
+- **Not implemented**: demo booking, proposal generation, and client onboarding
+  (priorities 3–5). `apps/storefront` and `apps/command-center` are scaffolds only.
 
 ---
 
@@ -177,9 +187,9 @@ Other infrastructure systems referenced in this repo:
 
 - **Supabase** — planned, not yet created (see [docs/supabase-readiness-plan.md](docs/supabase-readiness-plan.md)
   and [docs/supabase-create-project.md](docs/supabase-create-project.md))
-- **GitHub Actions** — [.github/workflows/ci.yml](.github/workflows/ci.yml) runs install, lint, typecheck, build
+- **GitHub Actions** — [.github/workflows/ci.yml](.github/workflows/ci.yml) runs install, lint, typecheck, test, build
 - **Custom domains** — not configured
-- **Analytics** — not configured
+- **Analytics** — Vercel Analytics events in apps/website (production only); no other analytics
 - **Email** — not configured
 - **WhatsApp** — not configured
 - **Payment providers** — Stripe planned, not started (`STRIPE_*` vars in `.env.example` only)
@@ -192,7 +202,7 @@ configured implies another is.
 
 - [ ] Run `pnpm lint`
 - [ ] Run `pnpm typecheck`
-- [ ] Run `pnpm test` (no test suites currently exist — see §7 gap)
+- [ ] Run `pnpm test` (only `apps/website` has tests — see §7)
 - [ ] Run `pnpm build` (`--concurrency 1` required on Windows — see [CLAUDE.md](CLAUDE.md)/PROGRESS.md)
 - [ ] Verify environment variables against `.env.example`
 - [ ] Verify authentication and authorization (not yet implemented in any app)
@@ -228,20 +238,24 @@ Inspect the repository first, then run the commands that actually exist.
 pnpm install
 pnpm lint        # turbo run lint
 pnpm typecheck   # turbo run typecheck
-pnpm test        # turbo run test — currently no test files exist in any app/package
+pnpm test        # turbo run test — only apps/website has a test script (3 files, 14 tests)
 pnpm build       # turbo run build (use --concurrency 1 on Windows)
 ```
 
 `python -m pytest` is **not applicable** — this repo has no Python code.
 
-**Gap**: No automated tests exist yet for any app or package. `pnpm test` will
-run `turbo run test` but individual packages have no `test` script wired to a
-runner. Document this gap rather than claiming tests pass.
+**Current coverage**: `apps/website` has a `test` script that compiles and runs three
+test files under `src/lib/` (`discovery`, `lead-measurement`, `video-series`) with
+`node --test` — 14 tests. CI runs `pnpm test` before the build.
+
+**Gap**: No other app or package has a `test` script, so `pnpm test` covers
+`apps/website` only. Document this gap rather than claiming wider coverage.
 
 Also validate (where the relevant feature exists in code):
 
-- Lead capture — not implemented
-- Contact forms — not implemented
+- Lead capture — implemented client-side only in `apps/website` (`/discovery`, WhatsApp
+  hand-off); no server-side storage
+- Contact forms — no server-side form; `/contact` links to the discovery form and WhatsApp
 - Demo booking — not implemented
 - Proposal generation — not implemented
 - Client onboarding — not implemented
@@ -471,7 +485,7 @@ chore: update deployment metadata
 - Rollback notes
 
 Do not merge when required checks fail (see [.github/workflows/ci.yml](.github/workflows/ci.yml)
-for required CI: install, lint, typecheck, build).
+for required CI: install, lint, typecheck, test, build).
 
 Use squash merge unless repository policy specifies otherwise.
 

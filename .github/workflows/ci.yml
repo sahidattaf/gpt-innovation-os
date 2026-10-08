@@ -8,7 +8,7 @@ on:
 
 jobs:
   validate:
-    name: Lint, Typecheck & Build
+    name: Lint, Typecheck, Test & Build
     runs-on: ubuntu-latest
 
     steps:
@@ -29,6 +29,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm typecheck
+
+      - name: Run tests
+        run: pnpm test
 
       - name: Build
         run: pnpm build
