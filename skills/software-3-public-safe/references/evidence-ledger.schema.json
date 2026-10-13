@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Generic evidence item — public-safe",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "claim_id",
+    "claim",
+    "evidence_class",
+    "status"
+  ],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claim": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_class": {
+      "enum": [
+        "VERIFIED_SOURCE",
+        "OWNER_DECISION",
+        "OWNER_UNVERIFIED",
+        "EXTERNAL_RESEARCH",
+        "AI_INFERENCE",
+        "UNKNOWN"
+      ]
+    },
+    "source_locator": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Non-sensitive citation, public path or human-verifiable identifier; never a credential or private URL."
+    },
+    "as_of_date": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "status": {
+      "enum": [
+        "SUPPORTED",
+        "PARTIAL",
+        "CONFLICTED",
+        "MISSING"
+      ]
+    },
+    "conflict_note": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "required_next_check": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}
