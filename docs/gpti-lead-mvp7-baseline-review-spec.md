@@ -52,9 +52,9 @@ When a denominator is zero, report **Not measurable**, not 0%. The opportunity r
 ## Review procedure
 
 1. Confirm the seven-day window has closed.
-2. Confirm production-only scope and the four approved event names.
+2. Confirm production-only scope and the six approved event names.
 3. Record aggregate event counts and discovery page views.
-4. Break CTA selections down only by `header`, `home`, `contact`, and `footer`.
+4. Break CTA selections down only by the approved location allowlist: `header`, `home`, `home_video`, `home_final`, `video_hub`, `video_episode`, `pilot`, `about`, `contact`, and `footer`.
 5. Calculate the scorecard with denominator safeguards.
 6. Separately count owner-verified opportunities from genuine discovery inquiries.
 7. Record missing data, suspected internal/bot traffic, instrumentation gaps, and sample limitations.
