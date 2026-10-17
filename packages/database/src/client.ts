@@ -1,19 +1,24 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "./types";
 
-function requireEnv(key: string): string {
+export function requireEnv(key: string): string {
   const value = process.env[key];
   if (!value) throw new Error(`Missing environment variable: ${key}`);
   return value;
 }
 
-export const db = createClient<Database>(
-  requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
-  requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
-);
+let _db: SupabaseClient<Database> | null = null;
 
-export const adminDb = createClient<Database>(
-  requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
-  requireEnv("SUPABASE_SERVICE_ROLE_KEY"),
-  { auth: { autoRefreshToken: false, persistSession: false } },
-);
+// Lazy construction: the client is created on first access, not at import time.
+// This prevents NEXT_PUBLIC_* vars from being demanded in build contexts that
+// bundle but do not invoke this module (e.g. Server Components that import
+// only types, or test environments using synthetic values).
+export function getDb(): SupabaseClient<Database> {
+  if (!_db) {
+    _db = createClient<Database>(
+      requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
+      requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
+    );
+  }
+  return _db;
+}

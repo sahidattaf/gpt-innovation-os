@@ -34,36 +34,40 @@ This is a readiness/inspection plan only.
 
 | File | What it does | Risk level |
 |------|-------------|------------|
-| `packages/database/src/client.ts` | Creates `db` (anon) and `adminDb` (service role) at **module scope** | HIGH — see §7 |
+| `packages/database/src/client.ts` | Exports `getDb()` (lazy anon client) and `requireEnv()` | Safe — lazy construction |
+| `packages/database/src/admin.ts` | Exports `getAdminDb()` (lazy service-role client); guarded by `server-only` | **SERVER-ONLY** — import only in Server Components / API routes |
 | `packages/database/src/types.ts` | TypeScript types for 3 tables: profiles, products, orders | Safe — types only |
-| `packages/database/src/index.ts` | Re-exports db, adminDb, Database, Tables | Safe — re-export only |
+| `packages/database/src/index.ts` | Re-exports `getDb`, `requireEnv`, `Database`, `Tables` only — no admin | Safe |
 | `packages/auth/src/client.ts` | Lazy `createClient()` — only runs when called | Safe — lazy |
 | `packages/auth/src/session.ts` | getSession(), getUser(), signOut() — calls createClient() lazily | Safe — lazy |
 | `.env.example` | Placeholder vars for all Supabase keys | Safe — no real values |
 
-### Critical finding — module-level client instantiation
+### A05 completed — boundary repair (2026-10-17)
 
-`packages/database/src/client.ts` lines 10–18 create `db` and `adminDb` at module scope:
+`packages/database` was refactored in branch `fix/gpti-a05-database-boundary`:
+
+- `db` (eager constant) → `getDb()` (lazy function in `client.ts`)
+- `adminDb` (eager constant, same module as `db`) → `getAdminDb()` (lazy function in `admin.ts`)
+- `admin.ts` is guarded by `import "server-only"` — Next.js throws a build-time error
+  if any Client Component or file reachable from one imports `@gpt-os/database/admin`
+- Public entry (`index.ts`) re-exports only `getDb`, `requireEnv`, and types
+- Package `exports` map added so `@gpt-os/database/admin` resolves as a named subpath
+- `server-only` added as a production dependency
+
+**Import contract going forward:**
 
 ```typescript
-export const db = createClient<Database>(
-  requireEnv("NEXT_PUBLIC_SUPABASE_URL"),      // throws if missing
-  requireEnv("NEXT_PUBLIC_SUPABASE_ANON_KEY"), // throws if missing
-);
+// Anywhere (Server Components, API routes, Client Components — public client only)
+import { getDb } from "@gpt-os/database";
+const client = getDb(); // lazy — only creates client on first call
 
-export const adminDb = createClient<Database>(
-  requireEnv("NEXT_PUBLIC_SUPABASE_URL"),
-  requireEnv("SUPABASE_SERVICE_ROLE_KEY"),      // throws if missing + SERVER-ONLY
-  { auth: { autoRefreshToken: false, persistSession: false } },
-);
+// Server-only (API routes, Server Components, server utilities — never "use client")
+import { getAdminDb } from "@gpt-os/database/admin";
+const admin = getAdminDb(); // lazy — only creates client on first call
 ```
 
-These run at module load time — the moment any file does `import { db } from "@gpt-os/database"`,
-all three env vars must be present or the process will throw.
-
-Current pages (storefront, ai-dashboard, command-center) don't import `@gpt-os/database`
-in their `page.tsx` yet, so builds currently pass. The moment any page or API route
-imports `db` or `adminDb`, the Supabase env vars become required at build time.
+`SUPABASE_SERVICE_ROLE_KEY` is required only when `getAdminDb()` is actually called,
+not at module load time or build time.
 
 ---
 
@@ -182,7 +186,7 @@ create table public.orders (
 ## 7. Security Checklist
 
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` is NEVER prefixed with `NEXT_PUBLIC_`
-- [ ] `adminDb` is NEVER imported in Client Components (`"use client"` files)
+- [ ] `getAdminDb` is NEVER imported in Client Components (`"use client"` files) — enforced by `server-only` guard in `packages/database/src/admin.ts`
 - [ ] RLS is enabled on `profiles`, `products`, and `orders` before any data is written
 - [ ] RLS policies: users can only read/update their own profile
 - [ ] RLS policies: orders visible to owner only
@@ -191,15 +195,21 @@ create table public.orders (
 - [ ] Supabase dashboard → Auth → Logs reviewed after first real signup
 - [ ] `.env.local` is in `.gitignore` — confirmed present in repo
 
-### adminDb import risk (flag for future API route work)
+### adminDb boundary — RESOLVED (A05, 2026-10-17)
 
-`packages/database/src/client.ts` exports both `db` and `adminDb` from the same module.
-If a Client Component imports `db`, Next.js may bundle the `adminDb` initializer (and the
-service role key read) into the client bundle.
+The `adminDb` constant and `db` no longer share a module. The boundary is now enforced:
 
-**Mitigation needed when command-center API routes are built:**
-Split `packages/database/src/admin.ts` to export only `adminDb`, and ensure it is imported
-exclusively in Server Components, API Routes, or Server Actions. Mark as a future task.
+- `packages/database/src/admin.ts` exports only `getAdminDb()` (lazy)
+- `import "server-only"` at the top of `admin.ts` causes a **build-time error** if any
+  Client Component imports `@gpt-os/database/admin`
+- The public entry (`@gpt-os/database`) does not expose `getAdminDb`
+- The `exports` map in `package.json` defines `"./admin"` as a named subpath
+
+When writing command-center API routes, import admin access exclusively from the subpath:
+```typescript
+import { getAdminDb } from "@gpt-os/database/admin";
+```
+Never import from `@gpt-os/database` (the default entry) for admin operations.
 
 ---
 
@@ -287,7 +297,7 @@ create policy "Users can view own orders"
 - Do NOT add Supabase env vars to Vercel (no project exists yet)
 - Do NOT start Stripe setup (storefront comes after Supabase is stable)
 - Do NOT start Cloudflare or custom domains
-- Do NOT split `adminDb` into a separate file yet (future task)
+- ~~Do NOT split `adminDb` into a separate file yet~~ — **DONE** in A05 (`admin.ts` + `server-only` guard)
 - Do NOT add Supabase CLI / migration files yet (manual SQL first)
 - Do NOT enable OAuth providers (Google, GitHub) until auth flows are built in the apps
 
