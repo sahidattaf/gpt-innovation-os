@@ -4,7 +4,7 @@
 **Gate:** G3 (Opportunity Prioritization & Pilot Selection)  
 **Status:** READY FOR G4  
 **Date:** 2026-09-25  
-**Evidence class:** OWNER_UNVERIFIED (scores pending) → OWNER_DECISION (after sign-off)
+**Evidence class:** OWNER_DECISION (Approved)
 
 ---
 
@@ -30,12 +30,12 @@ Each dimension is scored 1–5. Weighted total determines rank.
 |---|----------------------|----|----|----|----|----|-------|------|
 | 1 | GPT Innovation Operator Command Center — daily ops briefing | 5 | 5 | 4 | 4 | 4 | 4.40 | 1 |
 | 2 | Notion ↔ GitHub evidence sync automation | 4 | 5 | 4 | 3 | 4 | 3.95 | 6 |
-| 3 | Prompt contract validation & version binding | 4 | 4 | 3 | 4 | 5 | 4.00 | 4 (tie) |
+| 3 | Prompt contract validation & version binding | 4 | 4 | 3 | 4 | 5 | 4.00 | 4 |
 | 4 | KPI ledger auto-capture from commands | 5 | 5 | 4 | 3 | 4 | 4.20 | 3 |
 | 5 | Rollback trigger & audit preservation | 3 | 3 | 3 | 3 | 3 | 3.00 | 8 |
 | 6 | Client intake & scope drafting (gated) | 5 | 3 | 4 | 2 | 2 | 3.30 | 7 |
 | 7 | Fixture-based evaluation harness (FIX-001–012) | 4 | 5 | 5 | 4 | 4 | 4.35 | 2 |
-| 8 | Security & permission enforcement test runner | 4 | 4 | 4 | 4 | 4 | 4.00 | 4 (tie) |
+| 8 | Security & permission enforcement test runner | 4 | 4 | 4 | 4 | 4 | 4.00 | 5 |
 
 **Instructions for owner:** Replace `_` with integer scores 1–5. Total is computed. Rank top → bottom.
 
@@ -59,9 +59,9 @@ Capture current state BEFORE automation. These are the "before" numbers.
 | Defects per 100 commands | 5 (estimate) | < 2 | Post-release review |
 | Cost per command (XCG) | 15 XCG (estimate) | ≤ 8 XCG | AIRun cost log |
 | Latency p95 (sec) | 45 sec (estimate) | ≤ 20 sec | AIRun latency log |
-| Fixture pass rate (FIX-001–012) | 3 / 12 verified (25%) | 12 / 12 (100%) | TBD |
-| Hallucination incidents | Unknown — no log | 0 | TBD |
-| Permission enforcement | Not tested | 100% pass | TBD |
+| Fixture pass rate (FIX-001–012) | 3 / 12 verified (25%) | 12 / 12 (100%) | G7 full evaluation report |
+| Hallucination incidents | Unknown — no log | 0 | G7 verification report |
+| Permission enforcement | Not tested | 100% pass | Security evidence doc |
 
 **Owner confirmation:** ✅ Approved  
 **Owner gate:** `OWNER GATE S3-G3-KPI-BASELINE: APPROVED`
