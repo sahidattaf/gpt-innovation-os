@@ -1,0 +1,35 @@
+{
+  "events": [
+    {
+      "event_id": "EVT-001",
+      "command_id": "GIC-20261108-901",
+      "timestamp": "2026-11-08T10:13:36.598239+00:00",
+      "actor": "SYSTEM",
+      "event_type": "SCOPE_CHECK",
+      "object_type": "command",
+      "object_id": "GIC-20261108-901",
+      "result": "ALLOW",
+      "version": null,
+      "status_before": "RECEIVED",
+      "status_after": null,
+      "policy_rule": "SCOPE_ALLOWED",
+      "secret_fields": []
+    },
+    {
+      "event_id": "EVT-002",
+      "command_id": "GIC-20261108-901",
+      "timestamp": "2026-11-08T10:13:36.598429+00:00",
+      "actor": "SYSTEM",
+      "event_type": "SOURCE_PERMISSION_CHECK",
+      "object_type": "command",
+      "object_id": "GIC-20261108-901",
+      "result": "ALLOW",
+      "version": null,
+      "status_before": "SOURCE_CHECK",
+      "status_after": null,
+      "policy_rule": "SOURCE_ALLOWED",
+      "secret_fields": []
+    }
+  ],
+  "ai_runs": []
+}

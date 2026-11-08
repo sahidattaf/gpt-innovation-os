@@ -1,0 +1,106 @@
+{
+  "command_id": "GIC-20261108-901",
+  "all_criteria_met": true,
+  "verdict": "PASS (manual steps)",
+  "end_commit": "360f0970c53f959cb15fdf0acdc5b5318263bfb3",
+  "criteria": {
+    "P1": {
+      "pass": true,
+      "detail": "sha256(v1 packet) == H1 after rollback and re-approval"
+    },
+    "P2": {
+      "pass": true,
+      "detail": "v2 INVALID, packet and clean copy present, sha256(v2) == H2"
+    },
+    "P3": {
+      "pass": true,
+      "detail": {
+        "v1 approval vs v2": "DENY",
+        "invalidated v2 approval vs v2": "APPROVAL_INVALIDATED",
+        "invalidated v2 approval vs v1": "DENY",
+        "original v2 approval vs v1": "DENY",
+        "v2 approval (original) vs v3": "DENY",
+        "v2 approval (invalidated) vs v3": "DENY",
+        "v1 approval vs v3": "DENY"
+      }
+    },
+    "P4": {
+      "pass": true,
+      "detail": {
+        "execute_transition_refused_at": {
+          "R03-approval-v1.json": "refused: Disallowed transition: APPROVED + execute",
+          "R05-approval-v2.json": "refused: Disallowed transition: APPROVED + execute",
+          "07-freeze.json": "refused: Disallowed transition: APPROVED + execute",
+          "R14-approval-v3.json": "refused: Disallowed transition: APPROVED + execute"
+        },
+        "execution_type_events_in_ledger": []
+      }
+    },
+    "P5": {
+      "pass": true,
+      "detail": {
+        "ai_runs_at_freeze": 8,
+        "ai_runs_now": 8,
+        "approvals_at_freeze": 2,
+        "approvals_now": 2,
+        "no_model_calls_or_approvals_since_freeze": true,
+        "note": "window = freeze to restore; v3 generation (R-13) is the rollback correction step and happened after restore"
+      }
+    },
+    "P6": {
+      "pass": true,
+      "detail": {
+        "events_present_with_actor_timestamp_reason": {
+          "ERROR/FAIL": true,
+          "ROLLBACK/IN_PROGRESS": true,
+          "VERSION_SUPERSEDED/INVALID": true,
+          "ROLLBACK/RESTORED": true,
+          "ROLLBACK/SUCCESS": true
+        },
+        "saves": 17,
+        "all_append_only_verified": true,
+        "note": "the reason is stored in the policy_rule field; AuditEvent has no dedicated reason field"
+      }
+    },
+    "P7": {
+      "pass": true,
+      "detail": {
+        "R-11 all pass": true,
+        "v3 VAL-01..08 all pass": true
+      }
+    },
+    "P8": {
+      "pass": true,
+      "detail": {
+        "versions": [
+          "v1",
+          "v2",
+          "v3"
+        ],
+        "restored_from_version": "v1"
+      }
+    },
+    "P9": {
+      "pass": true,
+      "detail": {
+        "approval_id": "GIC-20261108-901-AP-v3-A3",
+        "approval_check": "ALLOW"
+      }
+    },
+    "P10": {
+      "pass": true,
+      "detail": {
+        "files_with_secret_material": [],
+        "VAL-02 (no blocked entity outside exclusion statements) v1/v2/v3": {
+          "v1": true,
+          "v2": true,
+          "v3": true
+        },
+        "unit_tests_ok": true,
+        "unit_tests_ran": "31",
+        "fixtures_exit0": true,
+        "interpretation": "blocked entities appear only as exclusions (the command lists BOSSA and clients as out of scope); a literal 'no mention at all' reading would fail by design"
+      }
+    }
+  }
+}

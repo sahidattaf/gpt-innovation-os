@@ -1,0 +1,14 @@
+{
+  "active_version": "v1",
+  "restored_from_version": "v1",
+  "restored_at": "2026-11-08T10:33:49.725104+00:00",
+  "version_number_kept": "v1",
+  "nothing_deleted": true,
+  "P5_freeze_window_check": {
+    "ai_runs_at_freeze": 8,
+    "ai_runs_now": 8,
+    "approvals_at_freeze": 2,
+    "approvals_now": 2,
+    "no_model_calls_or_approvals_since_freeze": true
+  }
+}

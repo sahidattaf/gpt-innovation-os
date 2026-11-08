@@ -1,0 +1,79 @@
+{
+  "t0": "2026-11-08T10:13:29.227152+00:00",
+  "baseline_commit": "360f0970c53f959cb15fdf0acdc5b5318263bfb3",
+  "baseline_tests": 31,
+  "baseline_ok": true,
+  "cmd": "GIC-20261108-901",
+  "date": "20261108",
+  "status": "APPROVED",
+  "versions": {
+    "v1": {
+      "packet_file": "02-v1-packet.md",
+      "sha256": "94bea07ac2d139f5d8a004749f21ce502573e45be8815d34eb9f3c68e2409673",
+      "status": "APPROVED",
+      "generated_at": "2026-11-08T10:15:37.302651+00:00"
+    },
+    "v2": {
+      "packet_file": "02-v2-packet.md",
+      "sha256": "749a5321f46da04a9a720ed213dff772523020e110a46d3b232d44eab1b9d25e",
+      "status": "INVALID",
+      "generated_at": "2026-11-08T10:21:47.653763+00:00",
+      "sha256_clean": "0d05a555ab7ead0cb365f327adae809d7f748df55754473e4805154f04860738",
+      "defect_injected": true,
+      "invalid_reason": "failed VAL-05 (source traceability): VERIFIED_SOURCE claim E-4 has no source reference"
+    },
+    "v3": {
+      "packet_file": "02-v3-packet.md",
+      "sha256": "88c1efbe5388f5eb27f35414a6bfd0f1dbe22aa313251a05e1910e3436516e52",
+      "status": "APPROVED",
+      "generated_at": "2026-11-08T10:35:51.943121+00:00"
+    }
+  },
+  "H1": "94bea07ac2d139f5d8a004749f21ce502573e45be8815d34eb9f3c68e2409673",
+  "approvals": [
+    {
+      "approval_id": "GIC-20261108-901-AP-v1-A1",
+      "command_id": "GIC-20261108-901",
+      "packet_version": "v1",
+      "decision": "APPROVED",
+      "approver": "Coach Sahid Attaf",
+      "timestamp": "2026-11-08T10:20:00.933010+00:00",
+      "method": "CHAT",
+      "evidence_reference": "chat:owner-reply-A1:'Approved'",
+      "valid": true
+    },
+    {
+      "approval_id": "GIC-20261108-901-AP-v2-A2",
+      "command_id": "GIC-20261108-901",
+      "packet_version": "v2",
+      "decision": "APPROVED",
+      "approver": "Coach Sahid Attaf",
+      "timestamp": "2026-11-08T10:33:29.894724+00:00",
+      "method": "CHAT",
+      "evidence_reference": "chat:owner-reply-A2:'Approved'",
+      "valid": false
+    },
+    {
+      "approval_id": "GIC-20261108-901-AP-v3-A3",
+      "command_id": "GIC-20261108-901",
+      "packet_version": "v3",
+      "decision": "APPROVED",
+      "approver": "Coach Sahid Attaf",
+      "timestamp": "2026-11-08T10:41:50.506777+00:00",
+      "method": "CHAT",
+      "evidence_reference": "chat:owner-reply-A3:'Approved'",
+      "valid": true
+    }
+  ],
+  "H2": "749a5321f46da04a9a720ed213dff772523020e110a46d3b232d44eab1b9d25e",
+  "H2_clean": "0d05a555ab7ead0cb365f327adae809d7f748df55754473e4805154f04860738",
+  "t_detect": "2026-11-08T10:33:30.241491+00:00",
+  "t_freeze": "2026-11-08T10:33:40.391443+00:00",
+  "ai_runs_at_freeze": 8,
+  "approvals_at_freeze": 2,
+  "active_version": "v3",
+  "restored_from_version": "v1",
+  "t_restore": "2026-11-08T10:33:49.725104+00:00",
+  "H3": "88c1efbe5388f5eb27f35414a6bfd0f1dbe22aa313251a05e1910e3436516e52",
+  "rollback_completed_at": "2026-11-08T10:41:50.516142+00:00"
+}

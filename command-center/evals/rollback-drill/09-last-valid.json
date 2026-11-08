@@ -1,0 +1,28 @@
+{
+  "walked_back_through": [
+    {
+      "event_id": "EVT-010",
+      "version": "v2",
+      "version_status": "INVALID",
+      "approval_valid": false
+    },
+    {
+      "event_id": "EVT-006",
+      "version": "v1",
+      "version_status": "APPROVED",
+      "approval_valid": true
+    }
+  ],
+  "last_valid": {
+    "event_id": "EVT-006",
+    "version": "v1",
+    "version_status": "APPROVED",
+    "approval_valid": true
+  },
+  "approval_record_intact": true,
+  "packet_sha256_now": "94bea07ac2d139f5d8a004749f21ce502573e45be8815d34eb9f3c68e2409673",
+  "packet_sha256_H": "94bea07ac2d139f5d8a004749f21ce502573e45be8815d34eb9f3c68e2409673",
+  "packet_matches_baseline_hash": true,
+  "approved_at": "2026-11-08T10:20:00.933010+00:00",
+  "approved_by": "Coach Sahid Attaf"
+}

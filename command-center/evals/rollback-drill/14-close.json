@@ -1,0 +1,19 @@
+{
+  "rollback_completed_at": "2026-11-08T10:41:50.516142+00:00",
+  "final_status": "APPROVED",
+  "active_version": "v3",
+  "restored_from_version": "v1",
+  "version_statuses": {
+    "v1": "APPROVED",
+    "v2": "INVALID",
+    "v3": "APPROVED"
+  },
+  "ledger": {
+    "label": "after-R14-close",
+    "saved_at": "2026-11-08T10:41:50.518180+00:00",
+    "events": 21,
+    "ai_runs": 12,
+    "sha256": "b81549676e55c765c7adf31fc0c1d5e3ffe3a01d2a8192b2d2844257df389c94",
+    "append_only_verified": true
+  }
+}

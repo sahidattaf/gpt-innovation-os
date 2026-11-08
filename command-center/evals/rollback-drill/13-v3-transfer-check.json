@@ -1,0 +1,17 @@
+{
+  "v2_approval_original_vs_v3": {
+    "result": "DENY",
+    "rule_id": "APPROVAL_VERSION_MISMATCH",
+    "rationale": "Approval does not bind to this command/version"
+  },
+  "v2_approval_invalidated_vs_v3": {
+    "result": "DENY",
+    "rule_id": "APPROVAL_INVALIDATED",
+    "rationale": "Approval has been invalidated (valid is not true)"
+  },
+  "v1_approval_vs_v3": {
+    "result": "DENY",
+    "rule_id": "APPROVAL_VERSION_MISMATCH",
+    "rationale": "Approval does not bind to this command/version"
+  }
+}
