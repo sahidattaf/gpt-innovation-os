@@ -1,7 +1,14 @@
 # G7 — Full Verification Report
+
+> **OWNER GATE S3-G7-CERTIFICATION: APPROVED**
+> Approved by Coach Sahid Attaf on 2026-11-08. Owner decisions recorded with this approval:
+> 1. The 9-item action allowlist (`analyze`, `classify`, `draft`, `recommend`, `summarize`, `validate`, `generate_packet`, `record_approval`, `read_context`) is approved.
+> 2. The limitations of pattern-based secret detection (§4, KD-4) are accepted.
+> 3. Open defects KD-1 and KD-5 are accepted for now.
+
 **Project:** Software 3.0 Transformer (S3T) — S3T-001
 **Gate:** G7 (Full Evaluation) — fixtures FIX-001 → FIX-012
-**Status:** ALL 12 FIXTURES PASS after the G7 security fixes — **owner certification pending**; KD-1 and KD-5 remain open (see §4)
+**Status:** G7 COMPLETE — PASSED (12 / 12 fixtures) — owner certification APPROVED 2026-11-08; KD-1 and KD-5 remain open by owner decision (see §4)
 **Run date:** 2026-11-08
 **Model:** `claude-sonnet-4-6` (from `CLAUDE_MODEL`), temperature 0, single run per fixture
 **Prompt contracts (final):** `intake-normalizer-v1.1`, `evidence-analyst-v1.1`, `approval-packet-v1.1`, `operator-reasoning-v1`
@@ -92,14 +99,14 @@ Unit tests: **22 / 22 pass** (10 from G6 plus 12 new for KD-3/KD-4). The G6 `tes
 
 | ID | Defect | Found in | Status |
 |---|---|---|---|
-| KD-1 | `approval-packet` hardcodes `Status: READY_FOR_APPROVAL`, so a packet for a command still at `NEEDS_CLARIFICATION` carries a contradictory label (still present in v1.1). | FIX-001 | **Open** — documented in the fixture and G5 spec; template not yet changed. |
+| KD-1 | `approval-packet` hardcodes `Status: READY_FOR_APPROVAL`, so a packet for a command still at `NEEDS_CLARIFICATION` carries a contradictory label (still present in v1.1). | FIX-001 | **Open — accepted by owner 2026-11-08.** Documented in the fixture and G5 spec; template not yet changed. |
 | KD-2 | Packet marked Option C "Approved" before any owner decision. | FIX-001 run 1 | **Fixed in `approval-packet-v1.1`**; clean in FIX-001 runs 2–3 and FIX-008 (both runs). |
 | KD-6 | Packet included an unsourced estimate ("near-certain full redraft"). | FIX-001 run 1 | **Fixed in `approval-packet-v1.1`**; verified as for KD-2. |
-| KD-3 | Prohibited actions were an exact-string denylist; `send_email` / `smtp_dispatch` returned `ALLOW`. | FIX-011 probe | **Fixed and verified** — fail-closed allowlist plus pattern matching. **Needs owner approval of the `permitted_actions` list** (see below). |
-| KD-4 | No secret detection or redaction in the policy engine or audit ledger. | FIX-012 | **Fixed and verified**, with limitations (below). |
-| KD-5 | The engine has no chat-approval phrase classifier, and the policy's `require_unique_pending_packet` is not enforced in code. FIX-009/010 verified at record level only. | FIX-009, FIX-010 | **Open** |
+| KD-3 | Prohibited actions were an exact-string denylist; `send_email` / `smtp_dispatch` returned `ALLOW`. | FIX-011 probe | **Fixed and verified** — fail-closed allowlist plus pattern matching. `permitted_actions` list **approved by owner 2026-11-08**. |
+| KD-4 | No secret detection or redaction in the policy engine or audit ledger. | FIX-012 | **Fixed and verified**, with limitations (below) — **limitations accepted by owner 2026-11-08**. |
+| KD-5 | The engine has no chat-approval phrase classifier, and the policy's `require_unique_pending_packet` is not enforced in code. FIX-009/010 verified at record level only. | FIX-009, FIX-010 | **Open — accepted by owner 2026-11-08** |
 
-**Needs owner decision — the action allowlist.** The nine permitted actions (`analyze`, `classify`, `draft`, `recommend`, `summarize`, `validate`, `generate_packet`, `record_approval`, `read_context`) were chosen by the evaluator as the minimum for the internal pilot. Any other action name is now blocked, so a legitimate action missing from this list will be refused until it is added.
+**Owner decision (approved 2026-11-08) — the action allowlist.** The nine permitted actions (`analyze`, `classify`, `draft`, `recommend`, `summarize`, `validate`, `generate_packet`, `record_approval`, `read_context`) were chosen by the evaluator as the minimum for the internal pilot. Any other action name is now blocked, so a legitimate action missing from this list will be refused until it is added.
 
 **KD-4 limitations**
 - Detection is pattern-based (common API-key, token, JWT, PEM and `label: value` forms). A secret in free text such as "the password is hunter2" is caught only if the caller labels the field. Fail-closed callers should label known-sensitive fields.
@@ -120,4 +127,4 @@ Unit tests: **22 / 22 pass** (10 from G6 plus 12 new for KD-3/KD-4). The G6 `tes
 - Several inputs (FIX-005–008) were authored by the evaluator; different wording could change model behaviour.
 - The fixes were verified with the same fixtures that exposed the defects, plus the probes added for them. That shows the defects are closed; it is not independent assurance.
 - The Notion workflow, first-five-command KPI measurement and wider security/privacy regression tests listed in the G6 report as G7 scope were not run here.
-- **G7 certification is an owner decision.** On the tested set, blocked-source enforcement, permission enforcement, approval isolation (record level) and version binding are at 100% against the G6 acceptance matrix; the matrix's "required fields" row was exercised only indirectly (FIX-001, FIX-005). KD-1 and KD-5 are open.
+- **G7 certification was an owner decision and was approved on 2026-11-08 (`OWNER GATE S3-G7-CERTIFICATION: APPROVED`).** The approval rests on the evidence and limitations in this report; it is not an independent audit. On the tested set, blocked-source enforcement, permission enforcement, approval isolation (record level) and version binding are at 100% against the G6 acceptance matrix; the matrix's "required fields" row was exercised only indirectly (FIX-001, FIX-005). KD-1 and KD-5 are open.
