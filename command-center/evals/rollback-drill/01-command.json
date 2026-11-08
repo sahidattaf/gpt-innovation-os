@@ -1,0 +1,90 @@
+{
+  "command_record": {
+    "command_id": "GIC-20261108-901",
+    "schema_version": "1.0",
+    "objective": "Recommend whether the pilot weekly status summary should include a KPI section",
+    "deliverable": "One-page internal recommendation",
+    "scope": "GPT Innovation Command Center",
+    "excluded_scope": "BOSSA, clients",
+    "priority": "P2",
+    "deadline": null,
+    "permitted_sources": [
+      "GPT Innovation Command Center"
+    ],
+    "input_method": "STRUCTURED_PROMPT",
+    "voice_verified": null,
+    "submitted_by": "Coach Sahid Attaf",
+    "submitted_at": "2026-11-08T10:13:36.598575+00:00",
+    "status": "CONTEXT_READY"
+  },
+  "status_trail": [
+    "RECEIVED",
+    "SOURCE_CHECK",
+    "CONTEXT_READY"
+  ],
+  "scope_check": {
+    "result": "ALLOW",
+    "rule_id": "SCOPE_ALLOWED",
+    "rationale": "No blocked scope or action detected"
+  },
+  "source_checks": [
+    {
+      "result": "ALLOW",
+      "rule_id": "SOURCE_ALLOWED",
+      "rationale": "Source is explicitly permitted"
+    },
+    {
+      "result": "ALLOW",
+      "rule_id": "SOURCE_ALLOWED",
+      "rationale": "Source is explicitly permitted"
+    },
+    {
+      "result": "ALLOW",
+      "rule_id": "SOURCE_ALLOWED",
+      "rationale": "Source is explicitly permitted"
+    },
+    {
+      "result": "ALLOW",
+      "rule_id": "SOURCE_ALLOWED",
+      "rationale": "Source is explicitly permitted"
+    }
+  ],
+  "action_check_generate_packet": {
+    "result": "ALLOW",
+    "rule_id": "ACTION_ALLOWED",
+    "rationale": "Action is on the pilot allowlist"
+  },
+  "schema_required_missing": [],
+  "schema_extra_fields": [],
+  "secret_scan_clean": true,
+  "evidence_register": [
+    {
+      "id": "E-1",
+      "claim": "The weekly status summary currently has no KPI section.",
+      "source": "GPT Innovation Command Center",
+      "ref": "rollback-drill/E-1"
+    },
+    {
+      "id": "E-2",
+      "claim": "Owner priority for Q4 is operational visibility.",
+      "source": "GPT Innovation Command Center",
+      "ref": "rollback-drill/E-2"
+    },
+    {
+      "id": "E-3",
+      "claim": "A KPI ledger (kpi-ledger.md) exists in the repository.",
+      "source": "GPT Innovation Command Center",
+      "ref": "rollback-drill/E-3"
+    }
+  ],
+  "command_text_for_model": {
+    "objective": "Recommend whether the pilot weekly status summary should include a KPI section",
+    "deliverable": "One-page internal recommendation",
+    "scope": "GPT Innovation Command Center",
+    "excluded_scope": "BOSSA, clients",
+    "permitted_sources": [
+      "GPT Innovation Command Center"
+    ],
+    "priority_text": "NORMAL"
+  }
+}

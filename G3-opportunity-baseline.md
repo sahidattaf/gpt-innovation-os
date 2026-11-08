@@ -2,7 +2,7 @@
 **Project:** Software 3.0 Transformer (S3T) — S3T-001  
 **Owner:** Coach Sahid Attaf  
 **Gate:** G3 (Opportunity Prioritization & Pilot Selection)  
-**Status:** READY FOR G4  
+**Status:** READY FOR G4 — G7 COMPLETE AND PASSED (12/12 fixtures; `OWNER GATE S3-G7-CERTIFICATION: APPROVED`, 2026-11-08; see `G7-full-verification-report.md`)  
 **Date:** 2026-09-25  
 **Evidence class:** OWNER_DECISION (Approved)
 

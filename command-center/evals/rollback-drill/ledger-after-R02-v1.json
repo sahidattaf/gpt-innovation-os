@@ -1,0 +1,122 @@
+{
+  "events": [
+    {
+      "event_id": "EVT-001",
+      "command_id": "GIC-20261108-901",
+      "timestamp": "2026-11-08T10:13:36.598239+00:00",
+      "actor": "SYSTEM",
+      "event_type": "SCOPE_CHECK",
+      "object_type": "command",
+      "object_id": "GIC-20261108-901",
+      "result": "ALLOW",
+      "version": null,
+      "status_before": "RECEIVED",
+      "status_after": null,
+      "policy_rule": "SCOPE_ALLOWED",
+      "secret_fields": []
+    },
+    {
+      "event_id": "EVT-002",
+      "command_id": "GIC-20261108-901",
+      "timestamp": "2026-11-08T10:13:36.598429+00:00",
+      "actor": "SYSTEM",
+      "event_type": "SOURCE_PERMISSION_CHECK",
+      "object_type": "command",
+      "object_id": "GIC-20261108-901",
+      "result": "ALLOW",
+      "version": null,
+      "status_before": "SOURCE_CHECK",
+      "status_after": null,
+      "policy_rule": "SOURCE_ALLOWED",
+      "secret_fields": []
+    },
+    {
+      "event_id": "EVT-003",
+      "command_id": "GIC-20261108-901",
+      "timestamp": "2026-11-08T10:15:37.272466+00:00",
+      "actor": "SYSTEM",
+      "event_type": "AI_REASONING_RUN",
+      "object_type": "packet",
+      "object_id": "GIC-20261108-901-AP-v1",
+      "result": "SUCCESS",
+      "version": null,
+      "status_before": "CONTEXT_READY",
+      "status_after": "ANALYSIS",
+      "policy_rule": null,
+      "secret_fields": []
+    },
+    {
+      "event_id": "EVT-004",
+      "command_id": "GIC-20261108-901",
+      "timestamp": "2026-11-08T10:15:37.295732+00:00",
+      "actor": "SYSTEM",
+      "event_type": "VALIDATION_RUN",
+      "object_type": "packet",
+      "object_id": "GIC-20261108-901-AP-v1",
+      "result": "FAIL",
+      "version": null,
+      "status_before": "ANALYSIS",
+      "status_after": "NEEDS_REVISION",
+      "policy_rule": "VAL-01..08",
+      "secret_fields": []
+    }
+  ],
+  "ai_runs": [
+    {
+      "run_id": "RUN-1108-901-v1-intake",
+      "command_id": "GIC-20261108-901",
+      "stage": "INTAKE",
+      "model": "claude-sonnet-4-6",
+      "status": "SUCCESS",
+      "input_tokens": 495,
+      "output_tokens": 516,
+      "total_tokens": 1011,
+      "estimated_cost_usd": null,
+      "estimated_cost_xcg": null,
+      "duration_ms": 9587,
+      "secret_fields": []
+    },
+    {
+      "run_id": "RUN-1108-901-v1-evidence",
+      "command_id": "GIC-20261108-901",
+      "stage": "EVIDENCE",
+      "model": "claude-sonnet-4-6",
+      "status": "SUCCESS",
+      "input_tokens": 499,
+      "output_tokens": 716,
+      "total_tokens": 1215,
+      "estimated_cost_usd": null,
+      "estimated_cost_xcg": null,
+      "duration_ms": 14902,
+      "secret_fields": []
+    },
+    {
+      "run_id": "RUN-1108-901-v1-reasoning",
+      "command_id": "GIC-20261108-901",
+      "stage": "REASONING",
+      "model": "claude-sonnet-4-6",
+      "status": "SUCCESS",
+      "input_tokens": 1699,
+      "output_tokens": 1257,
+      "total_tokens": 2956,
+      "estimated_cost_usd": null,
+      "estimated_cost_xcg": null,
+      "duration_ms": 29548,
+      "secret_fields": []
+    },
+    {
+      "run_id": "RUN-1108-901-v1-packet",
+      "command_id": "GIC-20261108-901",
+      "stage": "PACKET",
+      "model": "claude-sonnet-4-6",
+      "status": "SUCCESS",
+      "input_tokens": 3074,
+      "output_tokens": 1639,
+      "total_tokens": 4713,
+      "estimated_cost_usd": null,
+      "estimated_cost_xcg": null,
+      "duration_ms": 34135,
+      "secret_fields": []
+    }
+  ]
+}

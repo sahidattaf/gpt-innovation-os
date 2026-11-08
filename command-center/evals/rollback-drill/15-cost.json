@@ -1,0 +1,50 @@
+{
+  "t_detect": "2026-11-08T10:33:30.241491+00:00",
+  "t_freeze": "2026-11-08T10:33:40.391443+00:00",
+  "t_restore": "2026-11-08T10:33:49.725104+00:00",
+  "rollback_completed_at": "2026-11-08T10:41:50.516142+00:00",
+  "A3_timestamp": "2026-11-08T10:41:50.506777+00:00",
+  "detect_to_freeze_s": 10.15,
+  "freeze_to_restore_s": 9.33,
+  "freeze_to_reapproval_s": 490.12,
+  "freeze_to_close_s": 490.12,
+  "tokens_by_version": {
+    "v1": {
+      "input": 5767,
+      "output": 4128,
+      "model_seconds": 88.2
+    },
+    "v2": {
+      "input": 5830,
+      "output": 4225,
+      "model_seconds": 90.3
+    },
+    "v3": {
+      "input": 5815,
+      "output": 3946,
+      "model_seconds": 88.8
+    }
+  },
+  "tokens_for_detection_and_restore": {
+    "input": 0,
+    "output": 0,
+    "note": "deterministic checks only, no model calls"
+  },
+  "tokens_for_regeneration_v3": {
+    "input": 5815,
+    "output": 3946,
+    "model_seconds": 88.8
+  },
+  "note": "freeze_to_reapproval includes v3 generation, validation attempts and the owner's response time",
+  "manual_steps": {
+    "marked_MANUAL_in_plan": [
+      "R-02 (validation checklist, G5)",
+      "R-07 (freeze, G1)",
+      "R-08 (invalidate, G3)"
+    ],
+    "additional_manual_operations": [
+      "R-10 restore recorded as a record (G3)",
+      "3 manual NEEDS_REVISION -> READY_FOR_APPROVAL status changes (G7/F-4): v1, v2, v3"
+    ]
+  }
+}

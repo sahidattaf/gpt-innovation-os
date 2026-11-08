@@ -1,0 +1,30 @@
+{
+  "v2_status": "INVALID",
+  "v2_packet_sha256_now": "749a5321f46da04a9a720ed213dff772523020e110a46d3b232d44eab1b9d25e",
+  "v2_packet_sha256_H2": "749a5321f46da04a9a720ed213dff772523020e110a46d3b232d44eab1b9d25e",
+  "v2_unchanged": true,
+  "v2_packet_file_exists": true,
+  "original_A2_record_file_kept": true,
+  "approval_check_original_A2_record_vs_v2 (valid=True, before invalidation)": {
+    "result": "ALLOW",
+    "rule_id": "APPROVAL_VALID",
+    "rationale": "Approval is explicit and version-bound"
+  },
+  "approval_check_invalidated_A2_record_vs_v2 (valid=False)": {
+    "result": "DENY",
+    "rule_id": "APPROVAL_INVALIDATED",
+    "rationale": "Approval has been invalidated (valid is not true)"
+  },
+  "invalidated_record": {
+    "approval_id": "GIC-20261108-901-AP-v2-A2",
+    "command_id": "GIC-20261108-901",
+    "packet_version": "v2",
+    "decision": "APPROVED",
+    "approver": "Coach Sahid Attaf",
+    "timestamp": "2026-11-08T10:33:29.894724+00:00",
+    "method": "CHAT",
+    "evidence_reference": "chat:owner-reply-A2:'Approved'",
+    "valid": false
+  },
+  "manual_step": "G3: no code marks a version INVALID; recorded in state + ledger"
+}

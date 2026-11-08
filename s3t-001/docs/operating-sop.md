@@ -266,7 +266,7 @@ Status: `READY_FOR_APPROVAL`
 **Actions:**
 
 **9A: Packet Generation**
-1. Invoke `approval-packet-v1` prompt:
+1. Invoke `approval-packet-v1.1` prompt:
    - Do NOT pre-fill APPROVE
    - Include:
      - Command ID, exact packet version

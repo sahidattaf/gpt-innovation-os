@@ -1,0 +1,25 @@
+{
+  "approval_record": {
+    "approval_id": "GIC-20261108-901-AP-v3-A3",
+    "command_id": "GIC-20261108-901",
+    "packet_version": "v3",
+    "decision": "APPROVED",
+    "approver": "Coach Sahid Attaf",
+    "timestamp": "2026-11-08T10:41:50.506777+00:00",
+    "method": "CHAT",
+    "evidence_reference": "chat:owner-reply-A3:'Approved'",
+    "valid": true
+  },
+  "approval_check": {
+    "result": "ALLOW",
+    "rule_id": "APPROVAL_VALID",
+    "rationale": "Approval is explicit and version-bound"
+  },
+  "status_after": "APPROVED",
+  "stop_check_APPROVED_plus_execute": "refused: Disallowed transition: APPROVED + execute",
+  "schema_missing": [],
+  "schema_extra": [],
+  "unique_pending_before": [
+    "v3"
+  ]
+}

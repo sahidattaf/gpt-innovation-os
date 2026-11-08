@@ -1,0 +1,103 @@
+version: '1.0'
+mode: controlled_internal_pilot
+terminal_state: APPROVED
+fail_closed: true
+
+blocked_entities:
+  - BOSSA
+  - Kai Kòrsou
+  - Sea Horizon
+blocked_data_classes:
+  - confidential_client_data
+  - credentials
+  - secrets
+prohibited_actions:
+  - external_send
+  - publish
+  - deploy
+  - production_write
+  - client_delivery
+  - autonomous_execution
+
+permitted_sources:
+  - GPT Innovation Command Center
+  - Software 3.0 Transformation OS
+  - GPT Innovation by Attaf
+  - GPT Innovation — Owner Business Plan 2026
+  - GPT Innovation — Company Operations Hub
+  - sahidattaf/gpt-innovation-os
+  - relevant chat history
+
+unknown_source_result: OWNER_REVIEW
+
+source_precedence:
+  - GPT Innovation Command Center
+  - Software 3.0 Transformation OS — Command Center
+  - relevant chat history
+
+approval_precedence:
+  - Signed PDF
+  - Notion
+  - Chat
+
+approval_requirements:
+  notion:
+    required:
+      - Command ID
+      - Packet Version
+      - Approved
+      - Approver
+      - Date
+      - Approval Method
+  chat:
+    explicit_phrases:
+      - Approved
+      - Proceed
+    require_unique_pending_packet: true
+  signed_pdf:
+    require_command_id: true
+    require_packet_version: true
+
+approval_is_non_transitive: true
+material_change_invalidates_prior_approval: true
+invalidated_approval_result: DENY   # approval records with valid != true are rejected (G7 Step 7)
+
+# --- G7 security fixes (KD-3, KD-4) ---------------------------------------------
+# Fail-closed action control: an action may be requested only if it is allowlisted.
+# Anything else is blocked, including variants such as send_email or smtp_dispatch.
+permitted_actions:
+  - analyze
+  - classify
+  - draft
+  - recommend
+  - summarize
+  - validate
+  - generate_packet
+  - record_approval
+  - read_context
+prohibited_action_patterns:   # substring match on the normalized action name; selects rule ACTION_PROHIBITED
+  - send
+  - mail
+  - smtp
+  - sms
+  - dispatch
+  - transmit
+  - forward
+  - broadcast
+  - publish
+  - upload
+  - deploy
+  - deliver
+  - webhook
+  - external
+  - execute
+  - autonomous
+  - production
+
+secret_handling:
+  detection: pattern-based (command-center/src/secrets_guard.py) plus explicit field labels
+  on_detect_scope: BLOCK (rule SECRET_DETECTED)
+  on_detect_source: DENY (rule SECRET_DETECTED)
+  model_context: guard_model_input() raises before any text enters a prompt
+  audit_log: redaction layer replaces secrets and labelled secret fields with "[REDACTED]" before write
+  never_echo_secret: true

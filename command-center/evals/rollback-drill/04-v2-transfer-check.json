@@ -1,0 +1,7 @@
+{
+  "v1_approval_vs_v2": {
+    "result": "DENY",
+    "rule_id": "APPROVAL_VERSION_MISMATCH",
+    "rationale": "Approval does not bind to this command/version"
+  }
+}

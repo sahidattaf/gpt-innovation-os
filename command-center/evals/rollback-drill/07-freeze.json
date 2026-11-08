@@ -1,0 +1,15 @@
+{
+  "command_id": "GIC-20261108-901",
+  "status": "FROZEN_ROLLBACK",
+  "rollback_initiated_at": "2026-11-08T10:33:40.391443+00:00",
+  "reason": "material hallucination: unsupported VERIFIED_SOURCE claim (E-4) found in approved v2 by post-approval audit (VAL-05)",
+  "actor": "OPERATOR (Claude Code), owner present",
+  "manual_step": "G1: no FROZEN_ROLLBACK status in schema/state machine; recorded as a status record + ledger event",
+  "state_machine_check": {
+    "freeze": "RAISES: Disallowed transition: APPROVED + freeze",
+    "restore": "RAISES: Disallowed transition: APPROVED + restore"
+  },
+  "execute_transition": "refused: Disallowed transition: APPROVED + execute",
+  "ai_runs_at_freeze": 8,
+  "approvals_at_freeze": 2
+}

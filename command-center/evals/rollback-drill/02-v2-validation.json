@@ -1,0 +1,53 @@
+{
+  "command_id": "GIC-20261108-901",
+  "version": "v2",
+  "packet_sha256": "0d05a555ab7ead0cb365f327adae809d7f748df55754473e4805154f04860738",
+  "rerun_reason": "VAL-02 made structural for JSON output (exclusion lists and boolean flags no longer mis-flagged)",
+  "checks": {
+    "VAL-01 Required fields": {
+      "pass": true,
+      "kind": "mechanical",
+      "detail": "schema-missing=[]; intake status=READY"
+    },
+    "VAL-02 Scope": {
+      "pass": true,
+      "kind": "mechanical",
+      "detail": "scope=ALLOW, action=ALLOW, blocked-entity mentions outside exclusions=[], secrets in=[]"
+    },
+    "VAL-03 Source permissions": {
+      "pass": true,
+      "kind": "mechanical",
+      "detail": "source_check results=['ALLOW', 'ALLOW', 'ALLOW']"
+    },
+    "VAL-04 Evidence classification": {
+      "pass": true,
+      "kind": "mechanical",
+      "detail": "3/3 classified, completeness=100.0%"
+    },
+    "VAL-05 Source traceability": {
+      "pass": true,
+      "kind": "mechanical",
+      "detail": "register VERIFIED_SOURCE items=[]; refs present=True; claim lines labelled VERIFIED_SOURCE without a reference=[]"
+    },
+    "VAL-06 Conflict visibility": {
+      "pass": true,
+      "kind": "manual-review",
+      "detail": "conflict mentions in evidence output=3 (register was built without conflicts; operator to confirm none hidden)"
+    },
+    "VAL-07 Packet completeness": {
+      "pass": true,
+      "kind": "mechanical",
+      "detail": "13/13 (header 3/3, sections 10/10)"
+    },
+    "VAL-08 Approval isolation": {
+      "pass": true,
+      "kind": "mechanical+manual-review",
+      "detail": "decision pre-filled=False; option labels approved=[]; execution-verb lines=[]"
+    },
+    "_summary": {
+      "all_pass": true,
+      "completeness_percent": 100.0
+    }
+  },
+  "status_after_validation": "READY_FOR_APPROVAL"
+}

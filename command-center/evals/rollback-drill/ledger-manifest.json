@@ -1,0 +1,138 @@
+[
+  {
+    "label": "after-R01",
+    "saved_at": "2026-11-08T10:13:36.601600+00:00",
+    "events": 2,
+    "ai_runs": 0,
+    "sha256": "bd164d5d2f9b4afb278fa2ab0a8ace3b1455f2e694e8fbe6bfb267481555188d",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R02-v1",
+    "saved_at": "2026-11-08T10:15:37.301461+00:00",
+    "events": 4,
+    "ai_runs": 4,
+    "sha256": "fe6629ca2376132e1dfe4823c7da743f1b0f85cae35ed90a0bb6d16349dec0ba",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R02-v1-revalidate1",
+    "saved_at": "2026-11-08T10:16:47.719417+00:00",
+    "events": 5,
+    "ai_runs": 4,
+    "sha256": "b9bacbba6733752d0837e4b9e569331e88db9c12350b69b5b629a8ec5660c2c2",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R03",
+    "saved_at": "2026-11-08T10:20:00.937850+00:00",
+    "events": 6,
+    "ai_runs": 4,
+    "sha256": "06bafcdb1660b62d3343aa9619e67ace318a57d6f2fb74d8f886803fc89d3e8d",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R02-v2",
+    "saved_at": "2026-11-08T10:21:47.653100+00:00",
+    "events": 8,
+    "ai_runs": 8,
+    "sha256": "14b9395e3123f0338980854767681d067b9f87241b00547137c6e2838b9b6ae3",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R02-v2-revalidate1",
+    "saved_at": "2026-11-08T10:22:49.607868+00:00",
+    "events": 9,
+    "ai_runs": 8,
+    "sha256": "536ea2a69b8b6011c56a5c9629aa53059bb28b30f3b5fc16e05c73f4da71ccb0",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R05",
+    "saved_at": "2026-11-08T10:33:29.898598+00:00",
+    "events": 10,
+    "ai_runs": 8,
+    "sha256": "bac7fd26435b9b76f68d380e02c6adf0143d0be03f787e29868f51aa6b55e809",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R06",
+    "saved_at": "2026-11-08T10:33:30.276414+00:00",
+    "events": 11,
+    "ai_runs": 8,
+    "sha256": "d66c951730238040896ce44836df7044a4b685eea60643f2fb171c47ab77de91",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R07",
+    "saved_at": "2026-11-08T10:33:40.394261+00:00",
+    "events": 12,
+    "ai_runs": 8,
+    "sha256": "8fb4ac0c104b5966f305644b447b442c47c8c31659ebc7b25e0f21bce3f2da3d",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R08",
+    "saved_at": "2026-11-08T10:33:49.250764+00:00",
+    "events": 13,
+    "ai_runs": 8,
+    "sha256": "ee7bf08b67bd86d26680721974b8bac7ee35fc3910056fc65583dc92021884a5",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R10",
+    "saved_at": "2026-11-08T10:33:49.728775+00:00",
+    "events": 14,
+    "ai_runs": 8,
+    "sha256": "6c06b4cc6e5826689be7f4287f7a4eb1fe0f491660e1351be87a38e083d5328f",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R11",
+    "saved_at": "2026-11-08T10:34:00.161424+00:00",
+    "events": 15,
+    "ai_runs": 8,
+    "sha256": "e43b93c76c2483d227c127043162e807f6a8440256ed0ace5397dda1b8137621",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R02-v3",
+    "saved_at": "2026-11-08T10:35:51.942708+00:00",
+    "events": 17,
+    "ai_runs": 12,
+    "sha256": "daedd4c7734b619ce2b2ffb3ee0c37d93a969700b5064dfb0f35347e2f56140d",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R02-v3-revalidate1",
+    "saved_at": "2026-11-08T10:36:35.792845+00:00",
+    "events": 18,
+    "ai_runs": 12,
+    "sha256": "e8df347bcca8cda48503e5cff879df3ff62235e82f61c04cadfaaaf640de1371",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R02-v3-revalidate2",
+    "saved_at": "2026-11-08T10:37:01.044028+00:00",
+    "events": 19,
+    "ai_runs": 12,
+    "sha256": "be7b7c9d450e9e734bdb8d2e18273c4164f1b419c33808eaf3dd363f0996380b",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R14",
+    "saved_at": "2026-11-08T10:41:50.512828+00:00",
+    "events": 20,
+    "ai_runs": 12,
+    "sha256": "3b64731b475594338808517dc1badab6264fb5cdc5a07eb7b13284756f384cf8",
+    "append_only_verified": true
+  },
+  {
+    "label": "after-R14-close",
+    "saved_at": "2026-11-08T10:41:50.518180+00:00",
+    "events": 21,
+    "ai_runs": 12,
+    "sha256": "b81549676e55c765c7adf31fc0c1d5e3ffe3a01d2a8192b2d2844257df389c94",
+    "append_only_verified": true
+  }
+]

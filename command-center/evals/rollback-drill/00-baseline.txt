@@ -1,0 +1,33 @@
+R-00 baseline  t0=2026-11-08T10:13:29.227152+00:00
+
+$ git rev-parse HEAD
+(exit 0)
+360f0970c53f959cb15fdf0acdc5b5318263bfb3
+
+$ git branch --show-current
+(exit 0)
+feat/g3-baseline
+
+$ git status --short
+(exit 0)
+?? command-center/evals/rollback-drill/
+
+$ C:\AI_Business\car-rental-os\.venv\Scripts\python.exe -m unittest discover -s command-center/evals -p test_*.py
+(exit 0)
+...............................
+----------------------------------------------------------------------
+Ran 31 tests in 0.003s
+
+OK
+
+$ C:\AI_Business\car-rental-os\.venv\Scripts\python.exe scripts/g7-eval/det_fixtures.py
+(exit 0)
+FIX-001: 2/2 assertions  PASS
+FIX-002: 2/2 assertions  PASS
+FIX-003: 3/3 assertions  PASS
+FIX-004: 2/2 assertions  PASS
+FIX-008: 4/4 assertions  PASS
+FIX-009: 2/2 assertions  PASS
+FIX-010: 3/3 assertions  PASS
+FIX-011: 6/6 assertions  PASS
+FIX-012: 5/5 assertions  PASS
