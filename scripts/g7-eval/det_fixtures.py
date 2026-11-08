@@ -85,10 +85,12 @@ R["FIX-004"] = r
 # ---- FIX-008 version mismatch (deterministic part; packet v2 runs in run_llm.mjs)
 r = {"v1_approval_vs_v1": d(p.approval_check(rec("FIX-008", "v1"), "FIX-008", "v1")),
      "v1_approval_vs_v2": d(p.approval_check(rec("FIX-008", "v1"), "FIX-008", "v2")),
+     "invalidated_v1_approval_vs_v1": d(p.approval_check({**rec("FIX-008", "v1"), "valid": False}, "FIX-008", "v1")),
      "v2_packet_after_validation_pass": state("VALIDATION", "pass"),
      "approved_then_revise": state("APPROVED", "revise")}
 r["assertions"] = {"v1 approval valid for v1": r["v1_approval_vs_v1"]["result"] == "ALLOW",
                    "v1 approval DENIED for v2": r["v1_approval_vs_v2"]["rule_id"] == "APPROVAL_VERSION_MISMATCH",
+                   "invalidated approval DENIED even for its own version": r["invalidated_v1_approval_vs_v1"]["rule_id"] == "APPROVAL_INVALIDATED",
                    "v2 packet reaches READY_FOR_APPROVAL": r["v2_packet_after_validation_pass"] == "READY_FOR_APPROVAL"}
 R["FIX-008"] = r
 

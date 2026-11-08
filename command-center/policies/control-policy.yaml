@@ -60,6 +60,7 @@ approval_requirements:
 
 approval_is_non_transitive: true
 material_change_invalidates_prior_approval: true
+invalidated_approval_result: DENY   # approval records with valid != true are rejected (G7 Step 7)
 
 # --- G7 security fixes (KD-3, KD-4) ---------------------------------------------
 # Fail-closed action control: an action may be requested only if it is allowlisted.

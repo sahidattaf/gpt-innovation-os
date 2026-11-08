@@ -68,11 +68,17 @@
       "rule_id": "APPROVAL_VERSION_MISMATCH",
       "rationale": "Approval does not bind to this command/version"
     },
+    "invalidated_v1_approval_vs_v1": {
+      "result": "DENY",
+      "rule_id": "APPROVAL_INVALIDATED",
+      "rationale": "Approval has been invalidated (valid is not true)"
+    },
     "v2_packet_after_validation_pass": "READY_FOR_APPROVAL",
     "approved_then_revise": "RAISES ValueError: Disallowed transition: APPROVED + revise",
     "assertions": {
       "v1 approval valid for v1": true,
       "v1 approval DENIED for v2": true,
+      "invalidated approval DENIED even for its own version": true,
       "v2 packet reaches READY_FOR_APPROVAL": true
     }
   },

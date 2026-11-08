@@ -105,6 +105,38 @@ class PolicyEngineTests(unittest.TestCase):
         }
         self.assertEqual(approval_check(record, "GIC-20260903-001", "v2").result, "DENY")
 
+    # --- G7 Step 7: invalidated approvals are rejected -------------------------------
+    @staticmethod
+    def _approval(**overrides):
+        record = {
+            "command_id": "GIC-20260903-001", "packet_version": "v2", "decision": "APPROVED",
+            "approver": "Coach Sahid Attaf", "timestamp": "2026-09-03T14:00:00-04:00",
+            "method": "CHAT", "evidence_reference": "chat:approval",
+        }
+        record.update(overrides)
+        return record
+
+    def test_invalidated_approval_is_denied(self):
+        result = approval_check(self._approval(valid=False), "GIC-20260903-001", "v2")
+        self.assertEqual((result.result, result.rule_id), ("DENY", "APPROVAL_INVALIDATED"))
+
+    def test_valid_true_approval_still_allowed(self):
+        self.assertEqual(approval_check(self._approval(valid=True), "GIC-20260903-001", "v2").result, "ALLOW")
+
+    def test_valid_flag_must_be_exactly_true(self):
+        for bad in ("false", "true", None, 0, 1, ""):
+            with self.subTest(valid=bad):
+                self.assertEqual(approval_check(self._approval(valid=bad), "GIC-20260903-001", "v2").rule_id, "APPROVAL_INVALIDATED")
+
+    def test_record_without_valid_flag_is_accepted_for_compatibility(self):
+        self.assertEqual(approval_check(self._approval(), "GIC-20260903-001", "v2").result, "ALLOW")
+
+    def test_invalidated_approval_is_denied_even_for_its_own_version_after_rollback(self):
+        invalidated = self._approval(valid=False)
+        for version in ("v1", "v2", "v3"):
+            with self.subTest(version=version):
+                self.assertEqual(approval_check(invalidated, "GIC-20260903-001", version).result, "DENY")
+
     def test_version_bound_approval(self):
         record = {
             "command_id": "GIC-20260903-001",

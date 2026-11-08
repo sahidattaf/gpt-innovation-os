@@ -2,8 +2,8 @@
 **Project:** Software 3.0 Transformer (S3T) — S3T-001
 **Gate:** G7 — Step 7, Rollback live cycle
 **Drafted:** 2026-11-08
-**Status:** **PLANNED — NOT YET EXECUTED.** This document defines the test and the exact procedure. It contains no results. Every result field in §8 is blank until the test is run.
-**Authorization to execute:** `OWNER GATE S3-ROLLBACK-LIVE-TEST: PENDING` — the test must not start until the owner grants it and answers the decisions in §3.
+**Status:** **IN PROGRESS** — started 2026-11-08 (see the Execution log at the end). The procedure and pass criteria below were fixed before the run; result fields in §8 are filled in only as steps complete.
+**Authorization to execute:** granted by the owner in chat on 2026-11-08 ("Start the 16-step live rollback test"), with decisions D1–D4 answered (§3).
 
 ## 1. Purpose
 
@@ -25,14 +25,14 @@ Prove that a command can be stopped after a failure, reverted to its last valid 
 
 Safety invariants carried into the test (SOP §11, spec §42): never delete version history; never hide rollback events; never fabricate a prior version; never attach an approval from one version to another; never disable audit logging during rollback; APPROVED stays terminal (no execution).
 
-## 3. Decisions needed from the owner before execution
+## 3. Owner decisions (answered 2026-11-08)
 
 | # | Decision | Recommendation |
 |---|---|---|
-| D1 | **Execution mode.** Run now in *operator-driven mode*, where steps the code cannot do yet are performed by the operator and recorded (marked MANUAL, §5), or first build the missing rollback support (§5, G1–G5) and run fully automated. | Operator-driven now. The test is partly about finding exactly these gaps, and building first would test code written to pass this test. |
-| D2 | **Notion.** Write drill records to Notion (Active Projects, Decision Log, Output Queue) or keep all records as files in the repo. | Files only. Notion status values for `FROZEN_ROLLBACK` / `SUPERSEDED` are unverified, and Notion writes need their own authorization. |
-| D3 | **Owner availability.** The owner personally gives three explicit approvals in chat (A1, A2, A3) in one session. | Required; the approvals cannot be simulated. |
-| D4 | **Results.** Commit the results folder (`command-center/evals/results/rollback-live/`) to `feat/g3-baseline` after the run. | Yes. |
+| D1 | **Execution mode.** *Owner: run now with manual steps.*  Run now in *operator-driven mode*, where steps the code cannot do yet are performed by the operator and recorded (marked MANUAL, §5), or first build the missing rollback support (§5, G1–G5) and run fully automated. | Operator-driven now. The test is partly about finding exactly these gaps, and building first would test code written to pass this test. |
+| D2 | **Notion.** *Owner: keep all records in the repo, in `command-center/evals/rollback-drill/`.*  Write drill records to Notion (Active Projects, Decision Log, Output Queue) or keep all records as files in the repo. | Files only. Notion status values for `FROZEN_ROLLBACK` / `SUPERSEDED` are unverified, and Notion writes need their own authorization. |
+| D3 | **Owner availability.** *Owner: present; will give the three approvals when prompted.*  The owner personally gives three explicit approvals in chat (A1, A2, A3) in one session. | Required; the approvals cannot be simulated. |
+| D4 | **Results.** *Owner: commit the results folder after the run.*  Commit the results folder (`command-center/evals/rollback-drill/`) to `feat/g3-baseline` after the run. | Yes. |
 
 ## 4. Rules of engagement
 
@@ -45,12 +45,12 @@ Safety invariants carried into the test (SOP §11, spec §42): never delete vers
 
 ## 5. Readiness gaps found while writing this procedure
 
-These were checked against the current code on 2026-11-08. They are expected to appear during the run. Steps that depend on them are marked **MANUAL**; the run is still valid, and each gap becomes a defect or an accepted limitation.
+These were checked against the code on 2026-11-08. G2 has since been fixed; the rest are expected to appear during the run. Steps that depend on them are marked **MANUAL**; the run is still valid, and each gap becomes a defect or an accepted limitation.
 
 | ID | Gap | Evidence | Handling in this test |
 |---|---|---|---|
 | G1 | No `FROZEN_ROLLBACK` status. It is absent from the `contracts.schema.json` status enum, and `next_state("APPROVED", …)` raises for every event, so a freeze or restore cannot be expressed in the state machine. | `next_state("APPROVED","freeze")` and `next_state("FROZEN_ROLLBACK","restore")` both raise `Disallowed transition` | MANUAL: record the freeze as a status record plus a ledger event |
-| G2 | **An invalidated approval is still accepted.** The `ApprovalRecord` schema has a `valid` flag, but `approval_check` ignores it: a record with `valid: false` returned `ALLOW` / `APPROVAL_VALID`. | Smoke check, 2026-11-08 | Expected to FAIL step R-08's code check; compensate by recording the invalidation and by relying on the version-binding check (v2 approval vs v1/v3 returns `DENY`) |
+| G2 | **An invalidated approval was still accepted.** The `ApprovalRecord` schema has a `valid` flag, but `approval_check` ignored it: a record with `valid: false` returned `ALLOW` / `APPROVAL_VALID` (smoke check, 2026-11-08). | **FIXED before the run on the owner's instruction:** `approval_check` now returns `DENY` / `APPROVAL_INVALIDATED` when `valid` is present and not exactly `True`. 8 new unit tests (31 / 31 pass); 8 of them fail against the old engine. A record with no `valid` key is still accepted, for compatibility. | R-08 now expects `DENY`, and the engine check becomes a real test of the fix |
 | G3 | No code marks a version `SUPERSEDED` / `INVALID` or restores a version. | No such function in `policy_engine.py` or `audit_runtime.py` | MANUAL: JSON version records under the results folder |
 | G4 | The audit ledger is in memory only. | `AuditLedger` has no persistence | Dump `ledger.snapshot()` to a file after every phase; evidence is lost if not dumped |
 | G5 | The validation suite VAL-01 → VAL-08 exists as specification only. Partial support: scope/source checks, `evidence_completeness`, `approval_check`, the state machine and the secrets guard. | `policy_engine.py` | MANUAL checklist (§7, R-02), using the available functions where they apply |
@@ -93,13 +93,13 @@ PRIORITY: NORMAL
 
 ## 7. Step-by-step procedure
 
-Run from the repo root on `feat/g3-baseline`. Save every output under `command-center/evals/results/rollback-live/` (referred to below as `RES/`). **MANUAL** marks a step affected by a §5 gap. Helper definitions for the snippets are in Appendix A.
+Run from the repo root on `feat/g3-baseline`. Save every output under `command-center/evals/rollback-drill/` (referred to below as `RES/`). **MANUAL** marks a step affected by a §5 gap. Helper definitions for the snippets are in Appendix A.
 
 ### Phase A — Trigger
 
 | Step | Action | Expected result | Evidence saved |
 |---|---|---|---|
-| R-00 | Record baseline: `git rev-parse HEAD`, clean `git status`, `python -m unittest discover -s command-center/evals -p "test_*.py"` (expect 26 / 26), `python scripts/g7-eval/det_fixtures.py` (expect exit 0). Note start time `t0`. | Clean tree; all tests and fixtures pass | `RES/00-baseline.txt` |
+| R-00 | Record baseline: `git rev-parse HEAD`, clean `git status`, `python -m unittest discover -s command-center/evals -p "test_*.py"` (expect 31 / 31, after the G2 fix), `python scripts/g7-eval/det_fixtures.py` (expect exit 0). Note start time `t0`. | Clean tree; all tests and fixtures pass | `RES/00-baseline.txt` |
 | R-01 | Create the Command ID and the command record. Run `scope_check("GPT Innovation Command Center", "BOSSA, clients")` and `source_check("GPT Innovation Command Center")`. Append ledger events `SCOPE_CHECK` and `SOURCE_PERMISSION_CHECK`. | Both `ALLOW`; command status `RECEIVED` → `SOURCE_CHECK` → `CONTEXT_READY` (`next_state`) | `RES/01-command.json`, ledger dump |
 
 ### Phase B — Establish versions
@@ -122,7 +122,7 @@ Run from the repo root on `feat/g3-baseline`. Save every output under `command-c
 
 | Step | Action | Expected result | Evidence saved |
 |---|---|---|---|
-| R-08 | **Mark v2 invalid, keep it.** Record v2 as `INVALID` (reason: failed VAL-05; step needing correction: evidence classification). Mark the v2 approval record `valid: false`. Append `VERSION_SUPERSEDED`. Verify v2's packet file still exists and `sha256 == H2`. Check how the engine treats the invalidated approval: `approval_check(v2 record with valid=false, CMD, "v2")`. **MANUAL (G3); the last check is expected to return `ALLOW` (gap G2).** | v2 retained and unchanged; invalidation recorded; engine result for the invalid approval recorded as found | `RES/08-v2-invalid.json` |
+| R-08 | **Mark v2 invalid, keep it.** Record v2 as `INVALID` (reason: failed VAL-05; step needing correction: evidence classification). Mark the v2 approval record `valid: false`. Append `VERSION_SUPERSEDED`. Verify v2's packet file still exists and `sha256 == H2`. Check how the engine treats the invalidated approval: `approval_check(v2 record with valid=false, CMD, "v2")`. **MANUAL (G3).** The last check now expects `DENY` / `APPROVAL_INVALIDATED` (G2 fixed). | v2 retained and unchanged; invalidation recorded; invalidated approval → `DENY` / `APPROVAL_INVALIDATED` | `RES/08-v2-invalid.json` |
 | R-09 | **Locate the last valid version.** Walk the ledger backwards; find the last version marked `APPROVED` and valid that is not under dispute. Verify the v1 approval record is intact and `sha256(v1 packet) == H1`. If none existed, stop and follow SOP §7 (return to the owner; do not fabricate one). | v1 identified; hash equals `H1` | `RES/09-last-valid.json` |
 | R-10 | **Restore v1** as the active reference: `restored_from_version = v1`, `restored_at`; v1 keeps its number. Do not delete anything. | v1 active, status `APPROVED`; ledger shows all earlier events plus the new ones | `RES/10-restore.json` |
 
@@ -130,7 +130,7 @@ Run from the repo root on `feat/g3-baseline`. Save every output under `command-c
 
 | Step | Action | Expected result | Evidence saved |
 |---|---|---|---|
-| R-11 | Re-run on the restored state: `scope_check`, `source_check`; `approval_check(v1 record, CMD, "v1")`; `approval_check(v2 record, CMD, "v1")`; VAL-01 → VAL-08 checklist on v1; `evidence_completeness` ≥ 95; `sha256(v1) == H1`; `contains_secret` over every drill artifact; ledger event count never decreased and no event changed; re-run the unit tests and `det_fixtures.py`. Append `VALIDATION_RUN`. | `ALLOW`; v1 vs v1 `ALLOW`; v2 approval vs v1 `DENY`; all checklist items PASS; no secrets; ledger append-only; 26 / 26 tests and all fixtures pass | `RES/11-validation.json` |
+| R-11 | Re-run on the restored state: `scope_check`, `source_check`; `approval_check(v1 record, CMD, "v1")`; `approval_check(v2 record, CMD, "v1")`; VAL-01 → VAL-08 checklist on v1; `evidence_completeness` ≥ 95; `sha256(v1) == H1`; `contains_secret` over every drill artifact; ledger event count never decreased and no event changed; re-run the unit tests and `det_fixtures.py`. Append `VALIDATION_RUN`. | `ALLOW`; v1 vs v1 `ALLOW`; v2 approval vs v1 `DENY`; all checklist items PASS; no secrets; ledger append-only; 31 / 31 tests and all fixtures pass | `RES/11-validation.json` |
 | R-12 | **Material-change assessment** (SOP 4.6). v1's content is unchanged since A1, so its approval stands (status `APPROVED`). Record the decision and the reasoning. Record that the owner's wanted v2 change is not part of v1 and needs a corrected packet. | Assessment recorded; v1 approval retained | `RES/12-material-change.md` |
 
 ### Phase F — Correct and re-approve
@@ -149,7 +149,7 @@ The test is **PASS** only if every criterion below is met. It is **PASS (manual 
 |---|---|---|---|
 | P1 | The restored v1 is byte-identical to the approved v1 (`sha256 == H1`) | R-09, R-11 | NOT RUN |
 | P2 | v2 is preserved, marked `INVALID`, and unchanged (`sha256 == H2`); nothing was deleted | R-08 | NOT RUN |
-| P3 | No approval transfers between versions: v1 approval vs v2, v2 approval vs v1 and vs v3 all return `DENY` | R-04, R-11, R-13 | NOT RUN |
+| P3 | No approval transfers between versions, and an invalidated approval authorizes nothing: v1 approval vs v2, v2 approval vs v1 and vs v3 return `DENY`; the invalidated v2 approval returns `DENY` for v2 itself | R-04, R-08, R-11, R-13 | NOT RUN |
 | P4 | APPROVED stays terminal throughout: `APPROVED` + `execute` is refused and no external action occurs | R-03, R-07, R-14 | NOT RUN |
 | P5 | After the freeze, no activity on the command other than rollback steps | R-07 | NOT RUN |
 | P6 | Rollback events (`ERROR`, `VERSION_SUPERSEDED`, `ROLLBACK` in progress and success) are in the ledger with reason, actor and timestamps; the ledger is append-only | R-06 → R-14 | NOT RUN |
@@ -169,9 +169,7 @@ The test is **PASS** only if every criterion below is met. It is **PASS (manual 
 
 ## 9. Authorization to execute
 
-**OWNER GATE S3-ROLLBACK-LIVE-TEST: PENDING**
-
-Granted by: _______________  Date: _______________  Decisions D1–D4 recorded: ☐
+Granted by Coach Sahid Attaf in chat on 2026-11-08 with decisions D1–D4 recorded (§3). This is an owner instruction in chat; no `OWNER GATE` string has been issued for this test.
 
 ## Appendix A — Helper definitions for the snippets
 
@@ -204,3 +202,7 @@ def approval(version, decision="APPROVED", valid=True):
 #                    p.evidence_completeness(material_claims, classified)     -> percent
 #                    sg.contains_secret(text)                                  -> False expected
 ```
+
+## Execution log
+
+_Entries are added as each step completes._

@@ -132,6 +132,11 @@ def approval_check(record: Mapping[str, object], command_id: str, packet_version
     missing = [key for key in required if not record.get(key)]
     if missing:
         return PolicyResult("DENY", "APPROVAL_INCOMPLETE", f"Missing approval fields: {', '.join(missing)}")
+    # Rollback support (G7 Step 7): an invalidated approval must never authorize anything.
+    # If the record carries a `valid` flag it must be exactly True; False, "false", None, 0 all DENY.
+    # (A record with no `valid` key is still accepted, for compatibility with pre-rollback records.)
+    if "valid" in record and record["valid"] is not True:
+        return PolicyResult("DENY", "APPROVAL_INVALIDATED", "Approval has been invalidated (valid is not true)")
     if record["command_id"] != command_id or record["packet_version"] != packet_version:
         return PolicyResult("DENY", "APPROVAL_VERSION_MISMATCH", "Approval does not bind to this command/version")
     if record["decision"] != "APPROVED":
