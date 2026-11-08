@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test": "rm -rf .test-dist && tsc src/lib/discovery.ts src/lib/discovery.test.ts src/lib/lead-measurement.ts src/lib/lead-measurement.test.ts src/lib/video-series.ts src/lib/video-series.test.ts --outDir .test-dist --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck && node --test .test-dist/*.test.js && rm -rf .test-dist"
+    "test": "rimraf .test-dist && tsc src/lib/discovery.ts src/lib/discovery.test.ts src/lib/lead-measurement.ts src/lib/lead-measurement.test.ts src/lib/video-series.ts src/lib/video-series.test.ts --outDir .test-dist --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck && node --test .test-dist/discovery.test.js .test-dist/lead-measurement.test.js .test-dist/video-series.test.js && rimraf .test-dist"
   },
   "dependencies": {
     "@gpt-os/ui": "workspace:*",
@@ -22,6 +22,7 @@
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "rimraf": "^6.1.4",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.3"
   }
