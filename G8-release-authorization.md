@@ -11,7 +11,7 @@ On 2026-11-08 the owner, Coach Sahid Attaf, chose **Option B — authorize with 
 
 ### HARD BLOCKERS for any external, client or production use
 
-The owner has designated the following as **HARD BLOCKERS** for any external, client or production use. They must be resolved in the next cycle. Until they are, nothing beyond the internal pilot is authorized, and a separate explicit gate is still needed for any external or client use.
+The owner has designated the following eight items as **HARD BLOCKERS** for any external, client or production use: six on 2026-11-08, and **KD-5 and G8 added the same day** because they are critical for approval integrity. They must be resolved in the next cycle. Until they are, nothing beyond the internal pilot is authorized, and a separate explicit gate is still needed for any external or client use.
 
 | Blocker | Item | What the evidence shows |
 |---|---|---|
@@ -21,15 +21,19 @@ The owner has designated the following as **HARD BLOCKERS** for any external, cl
 | **G3** | No code to mark a version `INVALID`/`SUPERSEDED` or restore one | Invalidation and restore were manual records in the drill |
 | **G5** | Validation suite VAL-01 to VAL-08 not implemented as tested code | The drill's checker needed five corrections; spec and SOP number the checks differently |
 | **G7** | No transition out of `NEEDS_REVISION` | Confirmed three times in the drill; status changed by hand |
+| **KD-5** | No chat-approval phrase classifier, and "unique pending packet" is not enforced in code | In the drill the operator enforced both by hand. *Added 2026-11-08: critical for approval integrity* |
+| **G8** | Approvals are not bound to packet content (no content hash, no re-validation at approval time) | The drill's owner approved a packet that differed from the one validated, and nothing detected it. *Added 2026-11-08: critical for approval integrity* |
 
-**What resolving each would look like (proposed by the operator, to be confirmed in next-cycle planning):** monitoring: a written monitoring and review plan plus a working mechanism, with evidence it runs; G4: a persisted audit ledger with a test that it survives a restart; G1, G3, G7: rollback states and transitions in the schema and state machine, a freeze that blocks activity on the command, version supersede and restore, and an exit from `NEEDS_REVISION`, then a repeat of the live rollback drill with no manual steps; G5: VAL-01 to VAL-08 as tested code with the numbering reconciled.
+**What resolving each would look like (proposed by the operator, to be confirmed in next-cycle planning):** monitoring: a written monitoring and review plan plus a working mechanism, with evidence it runs; G4: a persisted audit ledger with a test that it survives a restart; G1, G3, G7: rollback states and transitions in the schema and state machine, a freeze that blocks activity on the command, version supersede and restore, and an exit from `NEEDS_REVISION`, then a repeat of the live rollback drill with no manual steps; G5: VAL-01 to VAL-08 as tested code with the numbering reconciled; KD-5: a chat-approval classifier that accepts only the explicit phrases in the policy, and "one pending packet per command" enforced in code, both with tests; G8: a `packet_sha256` field in the approval record and in `approval_check`, and re-validation of the exact packet bytes before an approval can be recorded, with a test that an approval is refused when the packet changed after validation.
+
+The owner approved the descriptions for the first six items. The descriptions for KD-5 and G8 were written afterwards, in the same form, and are proposals until confirmed.
 
 **Not yet set:** owners and target dates for these items were not stated in the decision and are not assumed here. They are to be assigned in next-cycle planning.
 
 ### Conditions that apply to the internal pilot
 - The pilot stays inside the boundary in §1: `Owner Command → Evidence Brief → Approval Packet → Owner Decision → STOP`, with `APPROVED` terminal and no external sending, publishing, deployment, client delivery, production or autonomous action.
 - Rollback during the pilot is the manual procedure documented and drilled in `rollback-operational-evidence.md`.
-- The remaining backlog in §4 (KD-1, KD-5, G8 and the additional items) stays open and accepted for the pilot. The owner did not designate these as hard blockers.
+- The remaining backlog in §4 (KD-1 and the additional items) stays open and accepted for the pilot. The owner did not designate these as hard blockers. KD-5 and G8 are hard blockers (above), but both remain open during the internal pilot, where the operator enforces one pending packet and the approval content by hand.
 
 ## 1. Decision that was requested
 
@@ -70,12 +74,12 @@ Owner-requested list. All were found and recorded during G7 to Step 7. None is f
 | ID | Gap | Status |
 |---|---|---|
 | **KD-1** | `approval-packet` hardcodes `Status: READY_FOR_APPROVAL`, so a packet for a command still at `NEEDS_CLARIFICATION` carries a contradictory label | Open; accepted by the owner at G7 |
-| **KD-5** | No chat-approval phrase classifier, and "unique pending packet" is not enforced in code | Open; accepted by the owner at G7. In the drill the operator enforced both by hand |
+| **KD-5** | No chat-approval phrase classifier, and "unique pending packet" is not enforced in code | Open; accepted by the owner at G7. **Now a hard blocker for external, client or production use** (2026-11-08). In the drill the operator enforced both by hand |
 | **G1** | No `FROZEN_ROLLBACK` state in the schema or state machine; `APPROVED` has no outgoing transitions, so a freeze or restore cannot be expressed or enforced. A frozen command is not actually blocked from further activity | Open; confirmed live in the drill (manual step) |
 | **G3** | No code to mark a version `INVALID`/`SUPERSEDED` or to restore a prior version | Open; confirmed in the drill (manual step) |
 | **G5** | The validation suite VAL-01 to VAL-08 exists only as specification plus ad-hoc code. The drill's checker needed five corrections mid-run, and the G5 spec and the s3t-001 rollback SOP number the checks differently | Open |
 | **G7** | No state transition leads out of `NEEDS_REVISION` (a dead end in `next_state`) | Open; confirmed live three times in the drill |
-| **G8** | **Content-hash binding:** approvals are not bound to the packet content that was validated. The drill's owner approved a packet that differed from the one validated, and nothing detected it; the approval record has no content hash and nothing re-validates at approval time | Open; new, found by the drill. Proposed fix: add `packet_sha256` to the approval record and `approval_check`, and re-validate at approval time |
+| **G8** | **Content-hash binding:** approvals are not bound to the packet content that was validated. The drill's owner approved a packet that differed from the one validated, and nothing detected it; the approval record has no content hash and nothing re-validates at approval time | Open; new, found by the drill. **Now a hard blocker for external, client or production use** (2026-11-08). Proposed fix: add `packet_sha256` to the approval record and `approval_check`, and re-validate at approval time |
 
 **Additional open items, added by the operator (not in the requested list).** Included so the release decision is made on the complete picture.
 
@@ -98,6 +102,6 @@ Owner-requested list. All were found and recorded during G7 to Step 7. None is f
 | **B. Authorize with conditions** | Release, but require named items first (for example a persisted audit ledger and a monitoring and review plan), with owners and dates recorded in the gate |
 | **C. Withhold** | Stay at G7 until an operating plan and monitoring are in place, then re-present |
 
-**Owner's choice: Option B**, with monitoring, G4, G1, G3, G5 and G7 designated hard blockers for any external, client or production use (see the Decision section).
+**Owner's choice: Option B**, with monitoring, G4, G1, G3, G5, G7, KD-5 and G8 designated hard blockers for any external, client or production use (see the Decision section).
 
 OWNER GATE S3-G8-RELEASE: APPROVED (CONDITIONAL - INTERNAL PILOT ONLY)
