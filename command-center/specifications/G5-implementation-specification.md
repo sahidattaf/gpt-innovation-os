@@ -662,7 +662,7 @@ retrieval_result:
 
 Suggested future file:
 
-`prompts/intake-normalizer-v1.md`
+`prompts/intake-normalizer-v1.1.md`
 
 Contract:
 
@@ -693,7 +693,7 @@ must_not:
 
 Suggested future file:
 
-`prompts/evidence-analyst-v1.md`
+`prompts/evidence-analyst-v1.1.md`
 
 Required output:
 
@@ -772,7 +772,7 @@ Required structure:
 
 Suggested file:
 
-`prompts/approval-packet-v1.md`
+`prompts/approval-packet-v1.1.md`
 
 Output contract:
 
@@ -1185,10 +1185,10 @@ Expected:
 `NEEDS_CLARIFICATION`
 
 > **G7 amendment (owner decision, Option A):** previously `READY_FOR_APPROVAL`. The fixture
-> supplies no `DELIVERABLE`, which `intake-normalizer-v1` treats as a critical missing field,
+> supplies no `DELIVERABLE`, which `intake-normalizer-v1.1` treats as a critical missing field,
 > so the command correctly stops at `NEEDS_CLARIFICATION` instead of inventing a deliverable.
 >
-> **Known defect (packet template):** `approval-packet-v1` hardcodes
+> **Known defect (packet template):** `approval-packet-v1.1` (and v1.0) hardcodes
 > `Status: READY_FOR_APPROVAL`, so a packet generated for a command that is still
 > `NEEDS_CLARIFICATION` carries a contradictory status label. To be fixed in G5/G6.
 
@@ -1446,11 +1446,11 @@ gpt-innovation-os/
     │   └── ai-run.schema.json
     │
     ├── prompts/
-    │   ├── intake-normalizer-v1.md
-    │   ├── evidence-analyst-v1.md
+    │   ├── intake-normalizer-v1.1.md
+    │   ├── evidence-analyst-v1.1.md
     │   ├── operator-reasoning-v1.md
     │   ├── evidence-brief-v1.md
-    │   └── approval-packet-v1.md
+    │   └── approval-packet-v1.1.md
     │
     ├── evals/
     │   ├── fixtures/

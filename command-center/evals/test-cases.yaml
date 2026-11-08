@@ -12,11 +12,11 @@ fixtures:
       status: NEEDS_CLARIFICATION  # G7 owner decision (Option A): was READY_FOR_APPROVAL
     notes:
       - >-
-        The fixture supplies no DELIVERABLE. intake-normalizer-v1 treats a missing
+        The fixture supplies no DELIVERABLE. intake-normalizer-v1.1 treats a missing
         DELIVERABLE as a critical gap, so NEEDS_CLARIFICATION is the correct outcome;
         the model correctly refused to invent a deliverable.
       - >-
-        KNOWN DEFECT (packet template): approval-packet-v1 hardcodes
+        KNOWN DEFECT (packet template): approval-packet v1.0/v1.1 hardcodes
         "Status: READY_FOR_APPROVAL", so a packet generated for a command that is
         still NEEDS_CLARIFICATION carries a contradictory status label.
 

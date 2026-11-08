@@ -1,4 +1,6 @@
-# Approval Packet Generator v1.0
+# Approval Packet Generator v1.1
+
+Changelog v1.0 → v1.1 (G7): options are never labelled "Approved"; unsourced numeric estimates are not allowed ("Not assessed").
 
 Generate a decision packet for the exact Command ID and Packet Version.
 

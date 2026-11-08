@@ -40,3 +40,7 @@ pnpm-debug.log*
 
 # Misc
 .cache/
+
+# Python
+__pycache__/
+*.pyc
