@@ -1182,7 +1182,15 @@ priority: NORMAL
 
 Expected:
 
-`READY_FOR_APPROVAL`
+`NEEDS_CLARIFICATION`
+
+> **G7 amendment (owner decision, Option A):** previously `READY_FOR_APPROVAL`. The fixture
+> supplies no `DELIVERABLE`, which `intake-normalizer-v1` treats as a critical missing field,
+> so the command correctly stops at `NEEDS_CLARIFICATION` instead of inventing a deliverable.
+>
+> **Known defect (packet template):** `approval-packet-v1` hardcodes
+> `Status: READY_FOR_APPROVAL`, so a packet generated for a command that is still
+> `NEEDS_CLARIFICATION` carries a contradictory status label. To be fixed in G5/G6.
 
 ---
 
