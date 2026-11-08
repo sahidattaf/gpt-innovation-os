@@ -24,6 +24,37 @@ class PolicyEngineTests(unittest.TestCase):
     def test_external_send_blocked(self):
         self.assertEqual(scope_check("GPT Innovation", requested_action="external_send").result, "BLOCK")
 
+    # --- G7 / KD-7 (P-1): blocked-entity name normalization --------------------------
+    KAI_VARIANTS = (
+        "Kai Kòrsou", "Kai Korsou", "KaiKorsou", "Kai-Korsou", "Kai Kórsou", "Kai  Korsou",
+        "KAI_KORSOU", "kai.korsou", "Kai​Korsou", "Kai Kòrsou", "Ｋａｉ　Ｋｏｒｓｏｕ",
+    )
+    BOSSA_VARIANTS = ("BOSSA", "bossa", "B.O.S.S.A", "ＢＯＳＳＡ", "B-O-S-S-A")
+    SEA_HORIZON_VARIANTS = ("Sea Horizon", "SeaHorizon", "Sea-Horizon", "Sea  Horizon", "SEA_HORIZON", "Sëa Hôrizon")
+
+    def test_blocked_entity_variants_blocked_in_scope_and_source(self):
+        for name in self.KAI_VARIANTS + self.BOSSA_VARIANTS + self.SEA_HORIZON_VARIANTS:
+            with self.subTest(name=name):
+                scope = scope_check(f"Analyze {name} performance")
+                source = source_check(name)
+                self.assertEqual((scope.result, scope.rule_id), ("BLOCK", "SCOPE_BLOCKED"))
+                self.assertEqual((source.result, source.rule_id), ("DENY", "SOURCE_BLOCKED"))
+
+    def test_all_kai_korsou_forms_normalize_to_the_same_key(self):
+        from policy_engine import _normalize_for_match
+        keys = {_normalize_for_match(name) for name in ("Kai Kòrsou", "KaiKorsou", "Kai-Korsou", "Kai Korsou")}
+        self.assertEqual(keys, {"kaikorsou"})
+
+    def test_blocked_names_listed_only_as_exclusions_are_still_allowed(self):
+        self.assertEqual(scope_check("GPT Innovation Command Center", "BOSSA, Kai Kòrsou, Sea Horizon, clients").result, "ALLOW")
+
+    def test_unrelated_text_is_not_blocked_by_normalization(self):
+        for text in ("GPT Innovation Command Center", "Software 3.0 Transformation OS", "Quarterly operating review"):
+            with self.subTest(text=text):
+                self.assertEqual(scope_check(text).result, "ALLOW")
+        self.assertEqual(source_check("Software 3.0 Transformation OS").result, "ALLOW")
+        self.assertEqual(source_check("Random External CRM").result, "OWNER_REVIEW")
+
     # --- G7 / KD-3: fail-closed action control --------------------------------------
     def test_external_send_variants_blocked(self):
         for action in ("send_email", "smtp_dispatch", "SendEmail", "email-send", "sendMail",

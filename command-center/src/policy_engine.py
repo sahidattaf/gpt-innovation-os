@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import re
 import sys
+import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Mapping
@@ -52,10 +53,27 @@ class PolicyResult:
     rationale: str
 
 
+def _normalize_for_match(text: str) -> str:
+    """Canonical form for blocked-entity matching (G7 fix, KD-7 / P-1).
+
+    Unicode-normalize (NFKD), drop accents/combining marks, lowercase, then keep only letters and
+    digits, which removes spaces, hyphens, underscores, other punctuation and zero-width characters.
+    "Kai Kòrsou", "Kai-Korsou", "KAI  KORSOU" and "KaiKorsou" all become "kaikorsou".
+
+    Known limits: visually identical characters from other scripts (for example Cyrillic "а" for
+    Latin "a") and misspellings are not normalized; matching is a substring test, so a blocked name
+    that appears across word boundaries ("ask Ai Korsou") also matches (fail-closed).
+    """
+    decomposed = unicodedata.normalize("NFKD", text)
+    without_accents = "".join(ch for ch in decomposed if not unicodedata.combining(ch))
+    return "".join(ch for ch in without_accents.casefold() if ch.isalnum())
+
+
 def _contains(haystack: str, needles: Iterable[str]) -> str | None:
-    normalized = haystack.casefold()
+    normalized = _normalize_for_match(haystack)
     for needle in needles:
-        if needle.casefold() in normalized:
+        key = _normalize_for_match(needle)
+        if key and key in normalized:
             return needle
     return None
 
