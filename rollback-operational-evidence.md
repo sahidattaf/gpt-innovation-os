@@ -169,13 +169,13 @@ The test is **PASS** only if every criterion below is met. It is **PASS (manual 
 - Approvals were recorded by the operator from chat (F-7).
 - The recorded `sha256` values are computed over text with line endings normalized to LF (`drill.py` reads files as text). A raw-byte hash of these files in a Windows (CRLF) checkout will not match; `drill.py`'s checks do.
 - P5 covers the freeze-to-restore window. P10 treats exclusion statements as acceptable.
-- No `OWNER GATE` string was issued for this test (§9).
+- The formal owner gate (`OWNER GATE S3-ROLLBACK-LIVE-TEST: APPROVED`) was added after the run, on the owner's instruction (§9 and the last line of this document).
 
 **Findings log:** see the Execution log (F-1 → F-7; gaps G1 → G8). Improvements are logged in `command-center/evals/rollback-drill/15-review.md` and are **not implemented** (SOP §10).
 
 ## 9. Authorization to execute
 
-Granted by Coach Sahid Attaf in chat on 2026-11-08 with decisions D1–D4 recorded (§3). This is an owner instruction in chat; no `OWNER GATE` string has been issued for this test.
+Granted by Coach Sahid Attaf in chat on 2026-11-08 with decisions D1–D4 recorded (§3). The formal gate string `OWNER GATE S3-ROLLBACK-LIVE-TEST: APPROVED` was added after the drill, on the owner's instruction; it is the last line of this document.
 
 ## Appendix A — Helper definitions for the snippets
 
@@ -260,3 +260,5 @@ Run on 2026-11-08. All records are in `command-center/evals/rollback-drill/` (dr
 | G6 Event names not validated | Not exercised (spec names were used exactly) |
 | G7 `NEEDS_REVISION` is a dead end | **Confirmed live** (F-4; again on v2 and v3) |
 | G8 Approval not bound to packet content | **New, found by the drill** (F-6) |
+
+OWNER GATE S3-ROLLBACK-LIVE-TEST: APPROVED
