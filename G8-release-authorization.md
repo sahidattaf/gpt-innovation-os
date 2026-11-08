@@ -1,11 +1,37 @@
-# G8 — Release Authorization (DRAFT)
+# G8 — Release Authorization
 **Project:** Software 3.0 Transformer (S3T) — S3T-001
 **Gate:** G8 (Release decision)
-**Status:** DRAFT — prepared for the owner's decision; nothing here is authorized yet
-**Drafted:** 2026-11-08
+**Status:** **APPROVED (CONDITIONAL) — INTERNAL PILOT ONLY**, decided by the owner on 2026-11-08. This is not approval for external, client or production use.
+**Drafted:** 2026-11-08 · **Decided:** 2026-11-08 (Coach Sahid Attaf)
 **Branch:** `feat/g3-baseline` (evidence is not yet merged to `main`)
 
-## 1. Decision requested
+## Decision
+
+On 2026-11-08 the owner, Coach Sahid Attaf, chose **Option B — authorize with conditions** (stated as "Option 2"). This release is **APPROVED (CONDITIONAL) for the Internal Pilot only**: the G6 controlled internal pilot as defined in §1, run under the existing SOPs.
+
+### HARD BLOCKERS for any external, client or production use
+
+The owner has designated the following as **HARD BLOCKERS** for any external, client or production use. They must be resolved in the next cycle. Until they are, nothing beyond the internal pilot is authorized, and a separate explicit gate is still needed for any external or client use.
+
+| Blocker | Item | What the evidence shows |
+|---|---|---|
+| Monitoring | No monitoring of the pilot in operation | Nothing in the repository monitors the pilot; no alerting or review cadence (§3) |
+| **G4** | Audit ledger is in memory only | The audit trail does not survive the process (§4) |
+| **G1** | No `FROZEN_ROLLBACK` state; a freeze cannot be expressed or enforced | Rollback freeze was a manual record in the drill |
+| **G3** | No code to mark a version `INVALID`/`SUPERSEDED` or restore one | Invalidation and restore were manual records in the drill |
+| **G5** | Validation suite VAL-01 to VAL-08 not implemented as tested code | The drill's checker needed five corrections; spec and SOP number the checks differently |
+| **G7** | No transition out of `NEEDS_REVISION` | Confirmed three times in the drill; status changed by hand |
+
+**What resolving each would look like (proposed by the operator, to be confirmed in next-cycle planning):** monitoring: a written monitoring and review plan plus a working mechanism, with evidence it runs; G4: a persisted audit ledger with a test that it survives a restart; G1, G3, G7: rollback states and transitions in the schema and state machine, a freeze that blocks activity on the command, version supersede and restore, and an exit from `NEEDS_REVISION`, then a repeat of the live rollback drill with no manual steps; G5: VAL-01 to VAL-08 as tested code with the numbering reconciled.
+
+**Not yet set:** owners and target dates for these items were not stated in the decision and are not assumed here. They are to be assigned in next-cycle planning.
+
+### Conditions that apply to the internal pilot
+- The pilot stays inside the boundary in §1: `Owner Command → Evidence Brief → Approval Packet → Owner Decision → STOP`, with `APPROVED` terminal and no external sending, publishing, deployment, client delivery, production or autonomous action.
+- Rollback during the pilot is the manual procedure documented and drilled in `rollback-operational-evidence.md`.
+- The remaining backlog in §4 (KD-1, KD-5, G8 and the additional items) stays open and accepted for the pilot. The owner did not designate these as hard blockers.
+
+## 1. Decision that was requested
 
 Whether to release the **G6 controlled internal pilot** of the GPT Innovation Operator Command Center: `Owner Command → Evidence Brief → Approval Packet → Owner Decision → STOP`.
 
@@ -31,9 +57,9 @@ Earlier gates G4 to G6 are recorded in the source pack (G5 ratified as `S3-G5-v1
 
 | Required by the gate model | Standing | Notes |
 |---|---|---|
-| **Owner approval** | **Pending** | This document's gate line is `PENDING`. No version-bound G8 owner gate exists yet. |
+| **Owner approval** | **Granted — conditional, internal pilot only** | Decided 2026-11-08; see the Decision section and the gate line at the bottom. |
 | **Operating plan** | **Partial** | A pilot operating SOP and rollback SOPs exist (`command-center/docs/operating-sop.md`, `command-center/docs/rollback-sop.md`, `s3t-001/docs/`). There is no release-specific plan covering who runs the pilot, how often, with what support, or an exit/stop criterion. |
-| **Monitoring** | **Not evidenced** | Nothing in the repository monitors the pilot in operation. The audit ledger records events and AI-run cost and latency in memory only (G4 below); there is no alerting or review cadence. The KPI ledger is an evaluation baseline, not monitoring. |
+| **Monitoring** | **Not evidenced — designated a hard blocker for external, client or production use** | Nothing in the repository monitors the pilot in operation. The audit ledger records events and AI-run cost and latency in memory only (G4 below); there is no alerting or review cadence. The KPI ledger is an evaluation baseline, not monitoring. |
 
 The S3T KPI dictionary also sets "Rollback readiness: tested rollback controls / required controls = 100% before G8". The drill tested the rollback procedure end to end, but several controls were performed manually (G1, G3, G7), so "100%" depends on whether manual operation counts as a tested control. That is an owner call.
 
@@ -64,7 +90,7 @@ Owner-requested list. All were found and recorded during G7 to Step 7. None is f
 | KPI | Pre-pilot baselines are estimates and processing times are placeholders; the "first five real commands" KPI measurement has not been done | There is no real baseline to judge the pilot against |
 | Merge | The evidence and code live on `feat/g3-baseline`, not on `main`. The G6 files copied onto this branch will probably conflict with `s3-g6-command-center-pilot` | The release needs a merge plan and a decision about the branch |
 
-## 5. Options for the owner
+## 5. Options that were put to the owner
 
 | Option | What it means |
 |---|---|
@@ -72,6 +98,6 @@ Owner-requested list. All were found and recorded during G7 to Step 7. None is f
 | **B. Authorize with conditions** | Release, but require named items first (for example a persisted audit ledger and a monitoring and review plan), with owners and dates recorded in the gate |
 | **C. Withhold** | Stay at G7 until an operating plan and monitoring are in place, then re-present |
 
-The evidence supports the controlled internal pilot. It does not yet cover monitoring or a persistent audit log, two things the gate model and the rollback design both lean on. The operator suggests the owner decide those two before authorizing; the choice is the owner's.
+**Owner's choice: Option B**, with monitoring, G4, G1, G3, G5 and G7 designated hard blockers for any external, client or production use (see the Decision section).
 
-OWNER GATE S3-G8-RELEASE: PENDING
+OWNER GATE S3-G8-RELEASE: APPROVED (CONDITIONAL - INTERNAL PILOT ONLY)
