@@ -4,7 +4,38 @@ Material implementation changes, newest first. Format follows Keep a Changelog. 
 
 Entries before 2026-11-18 were reconstructed from git history and the G6/G7/G8 reports; commit hashes are given where known.
 
-## [Unreleased] — 2026-11-18 — Gap closure (owner Option A)
+## [Unreleased] — 2026-11-18 — Security fixes
+
+### Changed
+- **Secret guard fails closed in the Node harnesses.** New `scripts/g7-eval/guard.mjs` (`secretFree`) is used by `run_llm.mjs` and `rollback-drill/pipeline.mjs`. Only an explicit exit 0 from `guard_cli.py` is "clean". A launch error, null status, crash or any other exit code blocks the model call; exit 3 (secret found) blocks at once. Previously any status other than 3 passed, so a Python that failed to launch let every input through.
+- **Actor schema.** `AuditEvent.actor` enum is now `OWNER`, `AI_OPERATOR`, `SYSTEM`, `OPERATOR`; existing records are unaffected.
+- **Content binding is mandatory.** `approval_check` always requires `packet_sha256` and `validated_sha256` and a hash in the record; the opt-in `require_content_binding` argument is removed. The identity checks are now `approval_version_check` (used by `approval_bypass.py` to audit older records, never an authorizer). `drill.py` records the packet hash in each approval and checks through `approval_gate`; `det_fixtures.py` passes hashes and FIX-008 asserts four new denials. `det-results.json` regenerated.
+- Tests: `test_fail_closed_and_schema.py` (16 new), policy and binding tests updated. 110 before, 126 after.
+
+### Known limits
+- No live approval workflow supplies the hashes yet, so the G8 blocker "approval not bound to packet content" stays open.
+- The historical drill evidence (`state.json`, ledgers, `R0x-approval-*.json`) was not regenerated: its approval records carry no hash and would now be denied if re-checked. Replaying the drill's injected-defect step would also now be denied at approval time, which is the intended behaviour.
+- No live model call was made; pricing is untested against real usage.
+
+## 2026-11-18 — Wiring and caveat fixes
+
+### Added
+- **Cost instrumentation wired into the harnesses.** `scripts/g7-eval/cost.mjs` and `cost_cli.py` let the Node runners record each model call (success and failure) through the production `AIRunRecorder`. `run_llm.mjs` and `rollback-drill/pipeline.mjs` now write `ai_runs` and `cost_summary` (USD, and XCG when `XCG_PER_USD` is set) next to their existing output; a run that dies part-way reports its partial cost on stderr. `drill.py` (`r02`) records through the recorder instead of building unpriced `AIRun`s by hand.
+- `resolve_xcg_per_usd` in `cost_instrumentation.py`: environment first, then `.env.local` / `.env`; reads only that key; an invalid value raises.
+- **Approval bound to packet content.** `policy_engine.packet_sha256()` and `approval_check(..., packet_sha256=, validated_sha256=, require_content_binding=)`. New rules: `APPROVAL_CONTENT_UNVERIFIABLE`, `APPROVAL_CONTENT_UNBOUND`, `PACKET_CHANGED_AFTER_VALIDATION`, `APPROVAL_CONTENT_MISMATCH`, `APPROVAL_VALID_CONTENT_BOUND`. `ApprovalRecord` gains optional `packet_sha256`.
+- **Approval-bypass counter** (G5 §34): `src/approval_bypass.py` (`count_approval_bypasses`). `pilot_metrics` adds `approval_bypasses` per command and `approval_bypass_count` in `baseline_summary`.
+- Tests: `test_approval_content_binding.py` (12), `test_approval_bypass.py` (22), `test_cost_wiring.py` (11).
+
+### Changed
+- `docs/acceptance-matrix.md`, `docs/architecture.md`, `docs/approval-sop.md`, `docs/version-history.md` updated for the above.
+
+### Known limits
+- Content binding is **opt-in**: `approval_check` without hashes is still version-only, and `drill.py` / `det_fixtures.py` call it that way. The engine does not run the VAL checks; it only proves the approved bytes are the validated bytes.
+- No live model run was made for this change, so committed result files and drill ledgers still hold unpriced runs until the harnesses are re-run.
+- The bypass counter audits the events and approvals it is given; nothing feeds it automatically.
+- Test count: 65 before, 110 after.
+
+## 2026-11-18 — Gap closure (owner Option A)
 
 The existing G6/G7 build is the certified baseline. This change closes documentation and instrumentation gaps only. It does not alter any policy, schema, prompt or existing module, and it does not touch Notion.
 

@@ -27,6 +27,7 @@ _SRC_DIR = str(Path(__file__).resolve().parent)
 if _SRC_DIR not in sys.path:  # allow loading this file by path (e.g. importlib in tests)
     sys.path.insert(0, _SRC_DIR)
 
+from approval_bypass import count_approval_bypasses  # noqa: E402
 from audit_runtime import AuditEvent  # noqa: E402
 from secrets_guard import redact_value  # noqa: E402
 
@@ -128,6 +129,14 @@ def follow_up_questions(questions: Sequence[FollowUpQuestion], events: Sequence[
     }
 
 
+def _bypass_section(events, approvals, validated_sha256, command_id):
+    if approvals is None:
+        return None
+    report = count_approval_bypasses(events, approvals, validated_sha256=validated_sha256, command_id=command_id)
+    return {"count": report.approval_bypass_count,
+            "findings": [{"event_id": f.event_id, "kind": f.kind, "detail": f.detail} for f in report.findings]}
+
+
 def build_command_metrics(
     command_id: str,
     *,
@@ -135,8 +144,14 @@ def build_command_metrics(
     events: Sequence[AuditEvent],
     follow_ups: Sequence[FollowUpQuestion] = (),
     ai_cost: Mapping[str, Any] | None = None,
+    approvals: Sequence[Mapping[str, Any]] | None = None,
+    validated_sha256: Mapping[str, str] | None = None,
 ) -> dict[str, Any]:
-    """The ``pilot_metrics`` object for one command. ``ai_cost`` is ``summarize_runs(...)`` output."""
+    """The ``pilot_metrics`` object for one command. ``ai_cost`` is ``summarize_runs(...)`` output.
+
+    Pass ``approvals`` (the command's approval records) to include ``approval_bypasses`` (G5 §34). Without them
+    the count cannot be known, so it is ``None`` rather than a false ``0``.
+    """
     own = [e for e in events if e.command_id == command_id]
     metrics = {
         "schema_version": SCHEMA_VERSION,
@@ -147,6 +162,7 @@ def build_command_metrics(
         "rework": rework(own),
         "follow_up_questions": follow_up_questions(follow_ups, own),
         "ai_cost": dict(ai_cost) if ai_cost is not None else None,
+        "approval_bypasses": _bypass_section(own, approvals, validated_sha256, command_id),
     }
     return redact_value(metrics)
 
@@ -231,6 +247,9 @@ def baseline_summary(all_metrics: Sequence[Mapping[str, Any]]) -> dict[str, Any]
         "owner_review_seconds_measured": len(review),
         "follow_up_questions_total": sum(m["follow_up_questions"]["count"] for m in all_metrics),
         "rework_rate_percent": rework_rate_percent(all_metrics),
+        "approval_bypass_count": (None if all(m.get("approval_bypasses") is None for m in all_metrics)
+                                  else sum((m.get("approval_bypasses") or {}).get("count", 0) for m in all_metrics)),
+        "approval_bypass_unmeasured_commands": sum(1 for m in all_metrics if m.get("approval_bypasses") is None),
         "ai_runs_total": sum((m["ai_cost"] or {}).get("ai_runs", 0) for m in all_metrics),
         "note": "Descriptive baseline only; five observations do not support an ROI claim (G5 §67).",
     }

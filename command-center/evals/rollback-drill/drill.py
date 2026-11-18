@@ -25,6 +25,7 @@ ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "command-center" / "src"))
 
 import audit_runtime as a  # noqa: E402
+import cost_instrumentation as ci  # noqa: E402
 import policy_engine as p  # noqa: E402
 import secrets_guard as sg  # noqa: E402
 
@@ -270,9 +271,13 @@ def r02(version: str) -> None:
     state = load_state(); cmd = state["cmd"]
     ledger = load_ledger()
     run = json.loads(read(HERE / f"02-{version}-run.json"))
+    # G5 §38: go through the production recorder so each run is priced (USD; XCG when XCG_PER_USD is set).
+    stage_ids = iter(f"RUN-{cmd[-8:]}-{version}-{stage}" for stage in run["stages"])
+    recorder = ci.AIRunRecorder(ledger, xcg_per_usd=ci.resolve_xcg_per_usd(env_files=[ROOT / ".env.local", ROOT / ".env"]),
+                                run_id_factory=lambda: next(stage_ids))
     for stage, info in run["stages"].items():
-        ledger.append_ai_run(a.AIRun(f"RUN-{cmd[-8:]}-{version}-{stage}", cmd, stage.upper(), run["model"], "SUCCESS",
-                                     info["input_tokens"], info["output_tokens"], info["input_tokens"] + info["output_tokens"], None, None, info["duration_ms"]))
+        recorder.record(command_id=cmd, stage=stage.upper(), model=run["model"], status="SUCCESS",
+                        input_tokens=info["input_tokens"], output_tokens=info["output_tokens"], duration_ms=info["duration_ms"])
     event(ledger, cmd, "AI_REASONING_RUN", f"{cmd}-AP-{version}", "SUCCESS", status_before="CONTEXT_READY", status_after="ANALYSIS")
     packet_text = read(HERE / f"02-{version}-packet.md")
     h = sha(packet_text)
@@ -321,6 +326,23 @@ def explicit_phrases() -> list[str]:
     return [line.strip()[2:] for line in block.group(1).strip().splitlines()]
 
 
+def packet_hashes(version: str) -> tuple[str, str | None]:
+    """(hash of the packet text on disk now, hash recorded when validation last ran on it).
+
+    The second value is None when no validation record exists, which makes approval_check fail closed.
+    """
+    in_hand = p.packet_sha256(read(HERE / f"02-{version}-packet.md"))
+    validation = HERE / f"02-{version}-validation.json"
+    validated = json.loads(read(validation)).get("packet_sha256") if validation.exists() else None
+    return in_hand, validated
+
+
+def approval_gate(record: dict, cmd: str, version: str) -> p.PolicyResult:
+    """approval_check with mandatory content binding (G8 blocker): the approval, the validated text and the packet in hand must agree."""
+    in_hand, validated = packet_hashes(version)
+    return p.approval_check(record, cmd, version, packet_sha256=in_hand, validated_sha256=validated)
+
+
 def record_approval(version: str, reply: str, label: str, step: str) -> None:
     """Record an owner approval given in chat. Enforces what the engine does not (KD-5): one pending packet, explicit phrase."""
     state = load_state(); cmd = state["cmd"]
@@ -332,11 +354,12 @@ def record_approval(version: str, reply: str, label: str, step: str) -> None:
     ts = now()
     record = {"approval_id": f"{cmd}-AP-{version}-{label}", "command_id": cmd, "packet_version": version, "decision": "APPROVED",
               "approver": "Coach Sahid Attaf", "timestamp": ts, "method": "CHAT",
-              "evidence_reference": f"chat:owner-reply-{label}:'{reply}'", "valid": True}
+              "evidence_reference": f"chat:owner-reply-{label}:'{reply}'", "valid": True,
+              "packet_sha256": packet_hashes(version)[0]}  # the exact text the owner is shown and approves
     schema = json.loads(read(ROOT / "command-center" / "schemas" / "contracts.schema.json"))["$defs"]["ApprovalRecord"]
     schema_missing = [k for k in schema["required"] if k not in record]
     schema_extra = [k for k in record if k not in schema["properties"]]
-    check = p.approval_check(record, cmd, version)
+    check = approval_gate(record, cmd, version)
     new_status = p.next_state("READY_FOR_APPROVAL", "approve") if check.result == "ALLOW" else "NOT_APPROVED"
     try:
         p.next_state("APPROVED", "execute"); stop = "NOT REFUSED"
@@ -412,8 +435,8 @@ def r08() -> None:
     packet_hash_now = sha(read(HERE / "02-v2-packet.md"))
     original_a2 = json.loads(read(HERE / "R05-approval-v2.json"))["approval_record"]
     invalidated = {**original_a2, "valid": False}
-    chk = p.approval_check(invalidated, cmd, "v2")
-    chk_orig = p.approval_check(original_a2, cmd, "v2")
+    chk = approval_gate(invalidated, cmd, "v2")
+    chk_orig = approval_gate(original_a2, cmd, "v2")
     event(ledger, cmd, "VERSION_SUPERSEDED", f"{cmd}-AP-v2", "INVALID", actor="OPERATOR", status_before="APPROVED", status_after="INVALID", policy_rule="VAL-05 failed: unsupported VERIFIED_SOURCE claim; correction needed in evidence classification", version="v2")
     entry = save_ledger(ledger, "after-R08")
     v2["status"] = "INVALID"
@@ -483,10 +506,10 @@ def r11() -> None:
     a1 = next(a_ for a_ in state["approvals"] if a_["packet_version"] == "v1")
     a2_inv = next(a_ for a_ in state["approvals"] if a_["packet_version"] == "v2")
     a2_orig = json.loads(read(HERE / "R05-approval-v2.json"))["approval_record"]
-    res["v1_approval_vs_v1"] = dataclasses.asdict(p.approval_check(a1, cmd, "v1"))
-    res["v2_approval_(invalidated)_vs_v1"] = dataclasses.asdict(p.approval_check(a2_inv, cmd, "v1"))
-    res["v2_approval_(original,valid=True)_vs_v1"] = dataclasses.asdict(p.approval_check(a2_orig, cmd, "v1"))
-    res["v2_approval_(invalidated)_vs_v2"] = dataclasses.asdict(p.approval_check(a2_inv, cmd, "v2"))
+    res["v1_approval_vs_v1"] = dataclasses.asdict(approval_gate(a1, cmd, "v1"))
+    res["v2_approval_(invalidated)_vs_v1"] = dataclasses.asdict(approval_gate(a2_inv, cmd, "v1"))
+    res["v2_approval_(original,valid=True)_vs_v1"] = dataclasses.asdict(approval_gate(a2_orig, cmd, "v1"))
+    res["v2_approval_(invalidated)_vs_v2"] = dataclasses.asdict(approval_gate(a2_inv, cmd, "v2"))
     checks = val_checklist(cmd, "v1")
     res["VAL_v1"] = {k: v["pass"] for k, v in checks.items() if k != "_summary"}
     res["evidence_completeness_v1"] = checks["_summary"]["completeness_percent"]
@@ -576,7 +599,7 @@ def r15() -> None:
     res["P8"] = {"pass": sorted(state["versions"]) == ["v1", "v2", "v3"] and state.get("restored_from_version") == "v1" and len(set(state["versions"])) == 3, "detail": {"versions": sorted(state["versions"]), "restored_from_version": state.get("restored_from_version")}}
     # P9
     a3 = next((a_ for a_ in state["approvals"] if a_["packet_version"] == "v3"), None)
-    c9 = p.approval_check(a3, cmd, "v3") if a3 else None
+    c9 = approval_gate(a3, cmd, "v3") if a3 else None
     res["P9"] = {"pass": bool(a3) and c9.result == "ALLOW" and a3["command_id"] == cmd and a3["valid"] is True, "detail": {"approval_id": a3 and a3["approval_id"], "approval_check": c9 and c9.result}}
     # P10: secrets, blocked entities outside exclusions, tests, fixtures
     leaks = [f.name for f in HERE.iterdir() if f.suffix in (".md", ".json", ".txt") and sg.contains_secret(read(f))]
@@ -630,7 +653,7 @@ def r04_inject(version: str) -> None:
     ledger = load_ledger()
     # approval transfer check: the v1 approval must not authorize v2
     v1_rec = state["approvals"][0]
-    transfer = p.approval_check(v1_rec, cmd, version)
+    transfer = approval_gate(v1_rec, cmd, version)
     write_json(HERE / f"04-{version}-transfer-check.json", {"v1_approval_vs_" + version: dataclasses.asdict(transfer)})
     (HERE / "04-drill-log.md").write_text(
         f"# R-04 drill log (SIMULATED FAILURE)\n\nTime: {now()}\n\nAfter {version} was generated and validated clean (sha256 {h_clean}), the operator inserted ONE unsupported claim into the packet's Evidence Summary table "

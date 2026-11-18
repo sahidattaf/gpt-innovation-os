@@ -100,6 +100,39 @@ def xcg_per_usd_from_env(environ: Mapping[str, str] | None = None) -> Decimal | 
     return Decimal(raw) if raw else None
 
 
+def resolve_xcg_per_usd(
+    environ: Mapping[str, str] | None = None,
+    env_files: Iterable[str | os.PathLike[str]] = (),
+) -> Decimal | None:
+    """XCG-per-USD from the environment, else from the first dotenv file that sets it, else ``None``.
+
+    Only the ``XCG_PER_USD`` key is read from a dotenv file; no other value in it is parsed or kept.
+    A set-but-invalid value raises, so a typo cannot silently turn into "no rate".
+    """
+    raw = (os.environ if environ is None else environ).get(XCG_PER_USD_ENV, "").strip()
+    for path in env_files:
+        if raw:
+            break
+        try:
+            lines = Path(path).read_text(encoding="utf-8").splitlines()
+        except OSError:
+            continue
+        for line in lines:
+            key, sep, value = line.partition("=")
+            if sep and key.strip() == XCG_PER_USD_ENV and not line.lstrip().startswith("#"):
+                raw = value.strip().strip("'\"")
+                break
+    if not raw:
+        return None
+    try:
+        rate = Decimal(raw)
+    except ArithmeticError as exc:
+        raise ValueError(f"{XCG_PER_USD_ENV} is not a number") from exc
+    if not rate.is_finite() or rate <= 0:
+        raise ValueError(f"{XCG_PER_USD_ENV} must be a positive number")
+    return rate
+
+
 def usage_tokens(usage: Mapping[str, Any] | None) -> tuple[int | None, int | None]:
     """Extract ``(input_tokens, output_tokens)`` from an Anthropic-style ``usage`` object."""
     if not usage:

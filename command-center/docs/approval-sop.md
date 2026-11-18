@@ -38,7 +38,19 @@ An approval is valid only if **all** hold:
 | 3 | Command ID or packet version differs from the packet in hand | `DENY` / `APPROVAL_VERSION_MISMATCH` |
 | 4 | `decision` is not `APPROVED` | `DENY` / `APPROVAL_NOT_APPROVED` |
 | 5 | `method` not in `SIGNED_PDF`, `NOTION`, `CHAT` | `DENY` / `APPROVAL_METHOD_INVALID` |
-| 6 | All pass | `ALLOW` / `APPROVAL_VALID` |
+| 6 | All pass (identity half, `approval_version_check`) | continue to content binding |
+
+**Content binding (mandatory).** There is no version-only path: a call without both hashes is denied. Pass `packet_sha256` (hash of the packet text in hand, from `packet_sha256(text)`) and `validated_sha256` (hash recorded when validation passed on that text). The record then needs its own `packet_sha256`, and all three must be identical. Any missing or malformed hash is a denial. Denials after step 5 above:
+
+| Condition | Result |
+|---|---|
+| Either caller hash missing or not 64 hex characters | `DENY` / `APPROVAL_CONTENT_UNVERIFIABLE` |
+| Record has no valid `packet_sha256` | `DENY` / `APPROVAL_CONTENT_UNBOUND` |
+| Packet in hand differs from the validated text | `DENY` / `PACKET_CHANGED_AFTER_VALIDATION` |
+| Record hash differs from the packet in hand | `DENY` / `APPROVAL_CONTENT_MISMATCH` |
+| All equal | `ALLOW` / `APPROVAL_VALID_CONTENT_BOUND` |
+
+Line endings (CRLF/LF) are normalized before hashing; any other difference changes the hash. `approval_version_check` (steps 1 to 5) exists for auditing historical records; it never authorizes anything. `ApprovalRecord.packet_sha256` is optional in the schema, so old records still validate, but the engine denies them (`APPROVAL_CONTENT_UNBOUND`).
 
 Any uncertainty is a denial (fail closed, G5 §44). The check does not verify who the approver is: confirming the approver is the owner is an operator duty.
 
@@ -73,7 +85,7 @@ The `OWNER_*` events feed the pilot metrics: owner review time is the gap betwee
 | Duty | Why it is manual |
 |---|---|
 | Only one pending packet per Command ID | `require_unique_pending_packet` is in the policy but not enforced in code (KD-5) |
-| The packet shown to the owner is byte-for-byte the packet that passed validation | Approvals are not bound to a content hash (G8 blocker). The rollback drill approved a packet that differed from the validated one and nothing detected it |
+| The packet shown to the owner is byte-for-byte the packet that passed validation. **Pass both hashes to `approval_check`** | Enforced by the engine and passed by `drill.py` and the fixtures, but no live approval workflow supplies the hashes yet (G8 blocker stays open). The rollback drill approved a packet that differed from the validated one and nothing detected it |
 | Re-run the validation checks on the exact approved text before recording | No validation at approval time (G8 blocker) |
 | Verify the approver is the owner | `approval_check` does not authenticate |
 

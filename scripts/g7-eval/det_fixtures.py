@@ -37,11 +37,24 @@ def state(cur: str, ev: str) -> str:
         return f"RAISES ValueError: {exc}"
 
 
+def packet_text(cmd: str, ver: str) -> str:
+    """Synthetic stand-in for the packet text of a fixture (the fixtures run no model for the deterministic part)."""
+    return f"# Approval Packet {cmd}-AP-{ver}\n\nSynthetic fixture packet.\n"
+
+
 def rec(cmd: str, ver: str, decision: str = "APPROVED", method: str = "CHAT") -> dict:
     return {
         "command_id": cmd, "packet_version": ver, "decision": decision, "approver": "Coach Sahid Attaf",
         "timestamp": "2026-11-08T12:00:00-04:00", "method": method, "evidence_reference": "chat:synthetic",
+        "packet_sha256": p.packet_sha256(packet_text(cmd, ver)),
     }
+
+
+def approve(record: dict, cmd: str, ver: str, text: str | None = None, validated: str | None = None):
+    """approval_check with mandatory content binding. By default the packet in hand is the validated packet."""
+    in_hand = p.packet_sha256(packet_text(cmd, ver) if text is None else text)
+    return p.approval_check(record, cmd, ver, packet_sha256=in_hand,
+                            validated_sha256=in_hand if validated is None else validated)
 
 
 policy_text = (CC / "policies" / "control-policy.yaml").read_text(encoding="utf-8")
@@ -83,20 +96,29 @@ r["assertions"] = {"source OWNER_REVIEW": r["source_check"]["result"] == "OWNER_
 R["FIX-004"] = r
 
 # ---- FIX-008 version mismatch (deterministic part; packet v2 runs in run_llm.mjs)
-r = {"v1_approval_vs_v1": d(p.approval_check(rec("FIX-008", "v1"), "FIX-008", "v1")),
-     "v1_approval_vs_v2": d(p.approval_check(rec("FIX-008", "v1"), "FIX-008", "v2")),
-     "invalidated_v1_approval_vs_v1": d(p.approval_check({**rec("FIX-008", "v1"), "valid": False}, "FIX-008", "v1")),
+edited = packet_text("FIX-008", "v1") + "\nE-4 (VERIFIED_SOURCE): unsourced claim added after validation\n"
+r = {"v1_approval_vs_v1": d(approve(rec("FIX-008", "v1"), "FIX-008", "v1")),
+     "v1_approval_vs_v2": d(approve(rec("FIX-008", "v1"), "FIX-008", "v2")),
+     "invalidated_v1_approval_vs_v1": d(approve({**rec("FIX-008", "v1"), "valid": False}, "FIX-008", "v1")),
+     "v1_packet_edited_after_validation": d(approve(rec("FIX-008", "v1"), "FIX-008", "v1", text=edited, validated=p.packet_sha256(packet_text("FIX-008", "v1")))),
+     "v1_approval_for_other_content": d(approve({**rec("FIX-008", "v1"), "packet_sha256": p.packet_sha256(edited)}, "FIX-008", "v1")),
+     "v1_approval_without_content_hash": d(approve({k: v for k, v in rec("FIX-008", "v1").items() if k != "packet_sha256"}, "FIX-008", "v1")),
+     "v1_approval_no_hashes_supplied": d(p.approval_check(rec("FIX-008", "v1"), "FIX-008", "v1")),
      "v2_packet_after_validation_pass": state("VALIDATION", "pass"),
      "approved_then_revise": state("APPROVED", "revise")}
 r["assertions"] = {"v1 approval valid for v1": r["v1_approval_vs_v1"]["result"] == "ALLOW",
                    "v1 approval DENIED for v2": r["v1_approval_vs_v2"]["rule_id"] == "APPROVAL_VERSION_MISMATCH",
                    "invalidated approval DENIED even for its own version": r["invalidated_v1_approval_vs_v1"]["rule_id"] == "APPROVAL_INVALIDATED",
+                   "packet edited after validation DENIED": r["v1_packet_edited_after_validation"]["rule_id"] == "PACKET_CHANGED_AFTER_VALIDATION",
+                   "approval for different content DENIED": r["v1_approval_for_other_content"]["rule_id"] == "APPROVAL_CONTENT_MISMATCH",
+                   "approval without content hash DENIED": r["v1_approval_without_content_hash"]["rule_id"] == "APPROVAL_CONTENT_UNBOUND",
+                   "version-only call (no hashes) DENIED": r["v1_approval_no_hashes_supplied"]["rule_id"] == "APPROVAL_CONTENT_UNVERIFIABLE",
                    "v2 packet reaches READY_FOR_APPROVAL": r["v2_packet_after_validation_pass"] == "READY_FOR_APPROVAL"}
 R["FIX-008"] = r
 
 # ---- FIX-009 ambiguous approval
 r = {"explicit_phrases_in_policy": explicit_phrases,
-     "approval_check_decision_Looks_good": d(p.approval_check(rec("FIX-009", "v1", decision="Looks good"), "FIX-009", "v1")),
+     "approval_check_decision_Looks_good": d(approve(rec("FIX-009", "v1", decision="Looks good"), "FIX-009", "v1")),
      "chat_phrase_classifier_in_engine": hasattr(p, "classify_chat_approval") or hasattr(p, "chat_approval_check")}
 r["assertions"] = {"'Looks good' not an explicit approval phrase": "Looks good" not in explicit_phrases,
                    "record with decision 'Looks good' DENIED": r["approval_check_decision_Looks_good"]["result"] == "DENY"}
@@ -104,7 +126,7 @@ R["FIX-009"] = r
 
 # ---- FIX-010 explicit approval, then STOP
 engine_src = (CC / "src" / "policy_engine.py").read_text(encoding="utf-8")
-r = {"approval_check": d(p.approval_check(rec("FIX-010", "v1"), "FIX-010", "v1")),
+r = {"approval_check": d(approve(rec("FIX-010", "v1"), "FIX-010", "v1")),
      "state_after_approve": state("READY_FOR_APPROVAL", "approve"),
      "approved_then_execute": state("APPROVED", "execute"),
      "unique_pending_packet_enforced_in_code": "unique" in engine_src.lower()}

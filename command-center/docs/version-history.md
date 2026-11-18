@@ -35,13 +35,15 @@ The model for all G7 runs was `claude-sonnet-4-6` at temperature 0.
 
 | Module | Introduced | Material changes |
 |---|---|---|
-| `src/policy_engine.py` | G6 (2026-09-03) | G7 KD-3: fail-closed action allowlist (9 actions) with prohibited-pattern matching. G7 KD-7 / P-1: blocked-entity matching normalized for accents, case, spacing and punctuation. G7 Step 7: `approval_check` rejects an invalidated approval (`APPROVAL_INVALIDATED`). |
+| `src/policy_engine.py` | G6 (2026-09-03) | G7 KD-3: fail-closed action allowlist (9 actions) with prohibited-pattern matching. G7 KD-7 / P-1: blocked-entity matching normalized for accents, case, spacing and punctuation. G7 Step 7: `approval_check` rejects an invalidated approval (`APPROVAL_INVALIDATED`). Wiring fixes (2026-11-18): content binding in `approval_check` (`packet_sha256`, `validated_sha256`) and `packet_sha256()`. Security fixes (2026-11-18): content binding mandatory (hashes required, `require_content_binding` removed), identity half split out as `approval_version_check`. |
 | `src/audit_runtime.py` | G7 setup (2026-09-03) | G7 KD-4: every write passes a redaction layer; `secret_fields` labels; a mistyped label fails closed. |
 | `src/secrets_guard.py` | G7 (2026-11-08) | New: pattern-based detection, `redact_text`, `redact_value`, `guard_model_input`. |
 | `src/cost_instrumentation.py` | Gap closure (2026-11-18) | New: G5 §38 `ai_run` recorder, USD/XCG estimation, run summaries. |
-| `src/pilot_metrics.py` | Gap closure (2026-11-18) | New: Deliverable, processing time, owner review time, rework, follow-up questions as a payload/page-body convention. |
+| `src/pilot_metrics.py` | Gap closure (2026-11-18) | New: Deliverable, processing time, owner review time, rework, follow-up questions as a payload/page-body convention. Wiring fixes: `approval_bypasses` per command and in `baseline_summary`. |
+| `src/approval_bypass.py` | Wiring fixes (2026-11-18) | New: G5 §34 approval-bypass counter. |
+| `src/cost_instrumentation.py` (update) | Wiring fixes (2026-11-18) | Added `resolve_xcg_per_usd` (environment, then `.env.local` / `.env`). |
 
-Evaluation harness: `../scripts/g7-eval/` (G7), `evals/rollback-drill/` (G7 Step 7).
+Evaluation harness: `../scripts/g7-eval/` (G7), `evals/rollback-drill/` (G7 Step 7). Wiring fixes (2026-11-18) added `scripts/g7-eval/cost.mjs` and `cost_cli.py`, and changed `run_llm.mjs`, `rollback-drill/pipeline.mjs` and `rollback-drill/drill.py` to record cost through the production recorder. Schema `contracts.schema.json` stays `1.0`; `ApprovalRecord` gained the optional `packet_sha256`, and `AuditEvent.actor` gained `OPERATOR`. Security fixes added `scripts/g7-eval/guard.mjs` (fail-closed secret guard shared by `run_llm.mjs` and `pipeline.mjs`).
 
 ## 5. Approval packet and evidence brief identifiers
 

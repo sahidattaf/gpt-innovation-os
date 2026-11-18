@@ -4,6 +4,7 @@ No network calls, no external actions, no autonomous execution.
 """
 from __future__ import annotations
 
+import hashlib
 import re
 import sys
 import unicodedata
@@ -127,7 +128,28 @@ def source_check(source: str) -> PolicyResult:
     return PolicyResult("OWNER_REVIEW", "SOURCE_UNKNOWN", "Unknown sources require owner approval")
 
 
-def approval_check(record: Mapping[str, object], command_id: str, packet_version: str) -> PolicyResult:
+_SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
+
+
+def packet_sha256(packet_text: str) -> str:
+    """SHA-256 of the exact packet text, with line endings normalized to LF (so CRLF/LF checkouts agree).
+
+    Nothing else is normalized: any other change to the text changes the hash.
+    """
+    return hashlib.sha256(packet_text.replace("\r\n", "\n").replace("\r", "\n").encode("utf-8")).hexdigest()
+
+
+def _is_sha256(value: object) -> bool:
+    return isinstance(value, str) and bool(_SHA256_RE.match(value))
+
+
+def approval_version_check(record: Mapping[str, object], command_id: str, packet_version: str) -> PolicyResult:
+    """Identity half of the approval check: complete, not invalidated, bound to this command and version,
+    explicit APPROVED decision, recognized method. It says nothing about packet content, so it is NOT enough
+    to authorize anything on its own; ``approval_check`` is the authorizing function.
+
+    ``approval_bypass.py`` uses this half to audit historical records that pre-date content binding.
+    """
     required = ("command_id", "packet_version", "decision", "approver", "timestamp", "method", "evidence_reference")
     missing = [key for key in required if not record.get(key)]
     if missing:
@@ -143,7 +165,40 @@ def approval_check(record: Mapping[str, object], command_id: str, packet_version
         return PolicyResult("DENY", "APPROVAL_NOT_APPROVED", "Owner decision is not APPROVED")
     if record["method"] not in {"SIGNED_PDF", "NOTION", "CHAT"}:
         return PolicyResult("DENY", "APPROVAL_METHOD_INVALID", "Unrecognized approval method")
-    return PolicyResult("ALLOW", "APPROVAL_VALID", "Approval is explicit and version-bound")
+    return PolicyResult("ALLOW", "APPROVAL_VERSION_VALID", "Approval is explicit and version-bound (content not checked)")
+
+
+def approval_check(
+    record: Mapping[str, object],
+    command_id: str,
+    packet_version: str,
+    *,
+    packet_sha256: str | None = None,
+    validated_sha256: str | None = None,
+) -> PolicyResult:
+    """Decide whether ``record`` is a valid approval of this command, packet version AND packet content.
+
+    Content binding is mandatory (G8 blocker "approval bound to packet content"). The caller must pass
+    ``packet_sha256`` (hash of the packet text in hand, see ``packet_sha256()`` above) and
+    ``validated_sha256`` (hash recorded when the validation suite passed on that packet). After the identity
+    checks in ``approval_version_check``, ALL of these must hold or the result is DENY: both hashes supplied
+    and well-formed, the record carries a ``packet_sha256``, and the record's hash, the validated hash and
+    the packet-in-hand hash are identical. There is no version-only path: omitting a hash is a denial.
+    """
+    identity = approval_version_check(record, command_id, packet_version)
+    if identity.result != "ALLOW":
+        return identity
+    if not (_is_sha256(packet_sha256) and _is_sha256(validated_sha256)):
+        return PolicyResult("DENY", "APPROVAL_CONTENT_UNVERIFIABLE",
+                            "Content binding needs well-formed packet and validated SHA-256 hashes")
+    if not _is_sha256(record.get("packet_sha256")):
+        return PolicyResult("DENY", "APPROVAL_CONTENT_UNBOUND", "Approval record carries no packet content hash")
+    if packet_sha256 != validated_sha256:
+        return PolicyResult("DENY", "PACKET_CHANGED_AFTER_VALIDATION",
+                            "Packet text differs from the text that passed validation; re-validate")
+    if record["packet_sha256"] != packet_sha256:
+        return PolicyResult("DENY", "APPROVAL_CONTENT_MISMATCH", "Approval was given for different packet content")
+    return PolicyResult("ALLOW", "APPROVAL_VALID_CONTENT_BOUND", "Approval is explicit, version-bound and content-bound")
 
 
 def evidence_completeness(material_claims: int, classified_claims: int) -> float:

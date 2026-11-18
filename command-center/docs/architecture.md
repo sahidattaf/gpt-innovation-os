@@ -40,10 +40,11 @@ Four logical fields have **no Notion property** and the owner has not approved a
 | Component | File | Responsibility | Software generation |
 |---|---|---|---|
 | Control policy | `policies/control-policy.yaml` (v1.0) | Declarative statement of blocked entities, data classes, actions, sources, terminal state, fail-closed | 1.0 |
-| Policy engine | `src/policy_engine.py` | `scope_check`, `source_check`, `action_check`, `secret_check`, `approval_check`, `evidence_completeness`, `next_state` | 1.0 |
+| Policy engine | `src/policy_engine.py` | `scope_check`, `source_check`, `action_check`, `secret_check`, `approval_check` (version- and content-bound; hashes mandatory), `approval_version_check`, `packet_sha256`, `evidence_completeness`, `next_state` | 1.0 |
 | Secrets guard | `src/secrets_guard.py` | Pattern-based detection and redaction; `guard_model_input` stops a secret before any prompt is built | 1.0 |
 | Audit ledger | `src/audit_runtime.py` | Append-only, in-memory `AuditEvent` and `AIRun` records; every write is redacted first | 1.0 |
 | Cost instrumentation | `src/cost_instrumentation.py` | Builds `ai_run` records (G5 §38): tokens, duration, status, estimated USD/XCG; run summaries | 1.0 |
+| Approval-bypass counter | `src/approval_bypass.py` | `count_approval_bypasses` (G5 §34): gated transitions without valid owner approval, from audit events and approval records | 1.0 |
 | Pilot metrics | `src/pilot_metrics.py` | Deliverable, processing time, owner review time, rework, follow-up questions; payload and page-body conventions | 1.0 |
 | Contracts | `schemas/contracts.schema.json` (v1.0) | `OwnerCommand`, `EvidenceItem`, `ApprovalRecord`, `AuditEvent`, `AIRun` | 1.0 |
 | Prompt contracts | `prompts/*.md` | Intake normalizer, evidence analyst, operator reasoning, evidence brief, approval packet | 3.0 |
@@ -78,6 +79,7 @@ Known limits of the machine (G8 backlog): no exit from `NEEDS_REVISION`, no `FRO
 - Status is `SUCCESS` or `FAIL` only.
 - Unknown is `None`, never `0`. `summarize_runs` reports `unpriced_runs` so a partial total is not presented as complete.
 - XCG uses an injected rate (`xcg_per_usd` argument or the `XCG_PER_USD` environment variable). No exchange rate is stored in code or prompts (G5 §38). Without a rate, XCG cost is `None`.
+- **Harness capture:** `scripts/g7-eval/run_llm.mjs` and `command-center/evals/rollback-drill/pipeline.mjs` log every call and record it through `scripts/g7-eval/cost_cli.py`, which uses the same recorder; `drill.py` records through it as well. The XCG rate comes from `XCG_PER_USD` (environment, then `.env.local` / `.env`).
 - The bundled rate card (`REFERENCE_RATE_CARD_USD`) is a reference default for `claude-sonnet-4-6`. G5 Dependency E (the owner-confirmed cost source) is still open; supply your own `rate_card` once it is decided. Prompt-cache tokens are not priced separately, so estimates are approximate.
 
 **Missing Notion fields (`pilot_metrics.py`, G5 §35–37, §59).** The module derives the values from audit events and returns one `pilot_metrics` object per command:
@@ -101,6 +103,7 @@ Everything passes through the secrets redaction layer before it is returned or r
 ## 6. Trust and failure model
 
 - **Fail closed (G5 §44).** If authorization cannot be established, the result is `DENY`/`BLOCK`. Unknown sources are `OWNER_REVIEW`; unknown actions are `ACTION_NOT_PERMITTED`; an unlabelled-secret typo raises rather than leaks.
+- **Harness secret guard fails closed.** `scripts/g7-eval/guard.mjs` returns "clean" only on an explicit exit 0 from `guard_cli.py`; a launch failure, crash or unexpected exit code blocks the model call.
 - **Secrets never enter model context or the ledger.** `guard_model_input` raises before a prompt is built; `AuditLedger` redacts every string field and fully redacts fields named in `secret_fields`. Detection is pattern-based (KD-4 limits, accepted by the owner).
 - **Approval is non-transitive.** `approval_check` binds an approval to the exact Command ID and Packet Version. See `approval-sop.md`.
 - **Append-only history.** The ledger has no update or delete method. Rollback never deletes history (`rollback-sop.md`).
@@ -114,8 +117,8 @@ Everything passes through the secrets redaction layer before it is returned or r
 | No rollback states/transitions or version supersede/restore code (done by hand in the drill) | G8 blockers G1, G3, G7 |
 | VAL-01–VAL-08 are not implemented as tested code | G8 blocker G5 |
 | No chat-approval phrase classifier; "one pending packet" not enforced in code | KD-5 (G8 blocker) |
-| Approvals are not bound to packet content (no `packet_sha256`) | G8 blocker G8 |
-| Cost recorder is not yet called from the eval harness or a live pipeline | `acceptance-matrix.md` §3 |
+| Content binding is mandatory in `approval_check` and passed by the drill and fixtures, but no live approval workflow supplies the hashes and the engine does not run VAL checks | G8 blocker G8 (engine enforces; workflow open) |
+| Harness costs are captured but no live run has been made since wiring | `acceptance-matrix.md` §3 |
 | Approval-packet template hardcodes `Status: READY_FOR_APPROVAL` | KD-1 (accepted) |
 | Schema `priority` enum is `P0/P1/P2`; G5 §12 specifies `LOW/NORMAL/HIGH/URGENT` | Rollback review item 7 |
 
