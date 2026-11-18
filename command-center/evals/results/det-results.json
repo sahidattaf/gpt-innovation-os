@@ -60,8 +60,8 @@
   "FIX-008": {
     "v1_approval_vs_v1": {
       "result": "ALLOW",
-      "rule_id": "APPROVAL_VALID",
-      "rationale": "Approval is explicit and version-bound"
+      "rule_id": "APPROVAL_VALID_CONTENT_BOUND",
+      "rationale": "Approval is explicit, version-bound and content-bound"
     },
     "v1_approval_vs_v2": {
       "result": "DENY",
@@ -73,12 +73,36 @@
       "rule_id": "APPROVAL_INVALIDATED",
       "rationale": "Approval has been invalidated (valid is not true)"
     },
+    "v1_packet_edited_after_validation": {
+      "result": "DENY",
+      "rule_id": "PACKET_CHANGED_AFTER_VALIDATION",
+      "rationale": "Packet text differs from the text that passed validation; re-validate"
+    },
+    "v1_approval_for_other_content": {
+      "result": "DENY",
+      "rule_id": "APPROVAL_CONTENT_MISMATCH",
+      "rationale": "Approval was given for different packet content"
+    },
+    "v1_approval_without_content_hash": {
+      "result": "DENY",
+      "rule_id": "APPROVAL_CONTENT_UNBOUND",
+      "rationale": "Approval record carries no packet content hash"
+    },
+    "v1_approval_no_hashes_supplied": {
+      "result": "DENY",
+      "rule_id": "APPROVAL_CONTENT_UNVERIFIABLE",
+      "rationale": "Content binding needs well-formed packet and validated SHA-256 hashes"
+    },
     "v2_packet_after_validation_pass": "READY_FOR_APPROVAL",
     "approved_then_revise": "RAISES ValueError: Disallowed transition: APPROVED + revise",
     "assertions": {
       "v1 approval valid for v1": true,
       "v1 approval DENIED for v2": true,
       "invalidated approval DENIED even for its own version": true,
+      "packet edited after validation DENIED": true,
+      "approval for different content DENIED": true,
+      "approval without content hash DENIED": true,
+      "version-only call (no hashes) DENIED": true,
       "v2 packet reaches READY_FOR_APPROVAL": true
     }
   },
@@ -101,8 +125,8 @@
   "FIX-010": {
     "approval_check": {
       "result": "ALLOW",
-      "rule_id": "APPROVAL_VALID",
-      "rationale": "Approval is explicit and version-bound"
+      "rule_id": "APPROVAL_VALID_CONTENT_BOUND",
+      "rationale": "Approval is explicit, version-bound and content-bound"
     },
     "state_after_approve": "APPROVED",
     "approved_then_execute": "RAISES ValueError: Disallowed transition: APPROVED + execute",

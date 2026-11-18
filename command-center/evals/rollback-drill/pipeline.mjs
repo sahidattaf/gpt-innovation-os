@@ -4,9 +4,10 @@
 // 02-<version>-{intake,evidence,reasoning,packet}.md and 02-<version>-run.json (model, tokens, timings).
 // Every model input passes the secrets guard first. Inputs are synthetic; the API key is never written out.
 import { readFileSync, writeFileSync } from "node:fs";
-import { spawnSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRunLog } from "../../../scripts/g7-eval/cost.mjs";
+import { secretFree } from "../../../scripts/g7-eval/guard.mjs"; // fails closed: only an explicit exit 0 is "clean"
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, "../../..");
@@ -27,19 +28,28 @@ const cmdId = cmdFile.command_record.command_id;
 const T = cmdFile.command_text_for_model;
 const json = (x) => JSON.stringify(x, null, 2);
 
-const secretFree = (t) => spawnSync("python", ["-I", `${ROOT}/scripts/g7-eval/guard_cli.py`], { input: t }).status !== 3;
 const stages = {};
+// G5 §38 cost instrumentation: each model call (success or failure) is recorded through the production
+// AIRunRecorder via scripts/g7-eval/cost_cli.py. Stage names match drill.py (upper-case stage key).
+const runLog = createRunLog({ model, runIdPrefix: `RUN-${version}` });
+process.on("exit", (code) => {
+  if (code === 0 || runLog.size() === 0) return;
+  try { console.error("cost (partial run):", JSON.stringify(runLog.flush().summary)); } catch (e) { console.error(String(e)); }
+});
 async function call(stage, system, user) {
   if (!(secretFree(system) && secretFree(user))) throw new Error(`SecretInModelInputError at stage ${stage}`);
   const t = Date.now();
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+  const log = (status, usage) => runLog.add({ commandId: cmdId, stage: stage.toUpperCase(), status, usage, durationMs: Date.now() - t });
+  let r;
+  try { r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({ model, max_tokens: 3500, temperature: 0, system, messages: [{ role: "user", content: user }] }),
-  });
+  }); } catch (e) { log("FAIL"); throw e; }
   const j = await r.json();
-  if (!r.ok) throw new Error(`API ${r.status} at stage ${stage}: ${j?.error?.type}: ${j?.error?.message}`);
-  stages[stage] = { input_tokens: j.usage.input_tokens, output_tokens: j.usage.output_tokens, duration_ms: Date.now() - t };
+  if (!r.ok) { log("FAIL"); throw new Error(`API ${r.status} at stage ${stage}: ${j?.error?.type}: ${j?.error?.message}`); }
+  log("SUCCESS", j.usage);
+  stages[stage] ={ input_tokens: j.usage.input_tokens, output_tokens: j.usage.output_tokens, duration_ms: Date.now() - t };
   return j.content.map((c) => c.text ?? "").join("");
 }
 
@@ -63,5 +73,7 @@ writeFileSync(`${HERE}/02-${version}-intake.md`, intake);
 writeFileSync(`${HERE}/02-${version}-evidence.md`, evidence);
 writeFileSync(`${HERE}/02-${version}-reasoning.md`, reasoning);
 writeFileSync(`${HERE}/02-${version}-packet.md`, packet);
-writeFileSync(`${HERE}/02-${version}-run.json`, json({ command_id: cmdId, version, model, started_at: startedAt, finished_at: new Date().toISOString(), revision: revision || null, stages }));
+const cost = runLog.flush(); // validated, redacted, priced (XCG when XCG_PER_USD is set) by the production recorder
+writeFileSync(`${HERE}/02-${version}-run.json`, json({ command_id: cmdId, version, model, started_at: startedAt, finished_at: new Date().toISOString(), revision: revision || null, stages, ai_runs: cost.ai_runs, cost_summary: { ...cost.summary, xcg_rate_configured: cost.xcg_rate_configured } }));
+console.log("cost:", JSON.stringify(cost.summary));
 console.log(`model=${model} version=${version}`, Object.entries(stages).map(([s, v]) => `${s}:${v.input_tokens}/${v.output_tokens}/${v.duration_ms}ms`).join(" "));

@@ -4,9 +4,10 @@
 // Needs ANTHROPIC_API_KEY (and optionally CLAUDE_MODEL) in .env.local. Writes
 // command-center/evals/results/llm-results.json. All inputs are synthetic; the key is never written out.
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { spawnSync } from "node:child_process";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRunLog } from "./cost.mjs";
+import { secretFree } from "./guard.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const CC = `${ROOT}/command-center`;
@@ -22,18 +23,31 @@ const det = JSON.parse(readFileSync(`${CC}/evals/results/det-results.json`, "utf
 const json = (x) => JSON.stringify(x, null, 2);
 
 // Same guard as production code: any text containing a secret must not enter model context.
-function secretFree(text) {
-  return spawnSync("python", ["-I", `${ROOT}/scripts/g7-eval/guard_cli.py`], { input: text }).status !== 3;
-}
+// secretFree (./guard.mjs) fails closed: anything other than an explicit "clean" verdict blocks the call.
+// G5 §38 cost instrumentation: every model call that is actually made (success or failure) is logged here and
+// recorded through the production AIRunRecorder (scripts/g7-eval/cost_cli.py) when the run ends.
+const runLog = createRunLog({ model, runIdPrefix: "G7" });
+// If the run dies part-way, still report what the calls made so far cost (including FAIL runs).
+process.on("exit", (code) => {
+  if (code === 0 || runLog.size() === 0) return;
+  try { console.error("cost (partial run):", JSON.stringify(runLog.flush().summary)); } catch (e) { console.error(String(e)); }
+});
+// Stage = prompt contract name (first heading, version stripped); Command ID = the fixture the call is for.
+const stageOf = (system) => system.split(/\r?\n/)[0].replace(/^#\s*/, "").replace(/\s+v[\d.]+$/, "").toUpperCase().replace(/\s+/g, "_");
+const commandOf = (user) => user.match(/Command ID:\s*(FIX-\d+)/)?.[1] ?? "UNKNOWN";
 async function call(system, user, { bypassGuard = false } = {}) {
   if (!bypassGuard && !(secretFree(system) && secretFree(user))) throw new Error("SecretInModelInputError: blocked before model call");
-  const r = await fetch("https://api.anthropic.com/v1/messages", {
+  const started = Date.now();
+  const log = (status, usage) => runLog.add({ commandId: commandOf(user), stage: stageOf(system), status, usage, durationMs: Date.now() - started });
+  let r;
+  try { r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
     body: JSON.stringify({ model, max_tokens: 3500, temperature: 0, system, messages: [{ role: "user", content: user }] }),
-  });
+  }); } catch (e) { log("FAIL"); throw e; }
   const j = await r.json();
-  if (!r.ok) throw new Error(`API ${r.status}: ${j?.error?.type}: ${j?.error?.message}`);
+  if (!r.ok) { log("FAIL"); throw new Error(`API ${r.status}: ${j?.error?.type}: ${j?.error?.message}`); }
+  log("SUCCESS", j.usage);
   return { text: j.content.map((c) => c.text ?? "").join(""), usage: j.usage };
 }
 
@@ -100,7 +114,11 @@ ${json({ note: "Prior owner approval was recorded for Packet v1 (chat: 'Approved
   out.fixtures["FIX-012"] = { guardBlockedModelCall: guardBlocked, backstopProbe: { ...probe, echoedFakeToken: probe.text.includes(FAKE), usedRedactedMarker: probe.text.includes("[REDACTED]") } };
 }
 
+const cost = runLog.flush(); // validates, redacts, prices (USD; XCG if XCG_PER_USD is set) and summarizes
+out.ai_runs = cost.ai_runs;
+out.cost_summary = { ...cost.summary, xcg_rate_configured: cost.xcg_rate_configured };
 mkdirSync(`${CC}/evals/results`, { recursive: true });
 writeFileSync(`${CC}/evals/results/llm-results.json`, json(out));
 console.log("model:", model);
 for (const [k, v] of Object.entries(out.fixtures)) console.log(k, Object.entries(v).map(([s, r]) => (r?.usage ? `${s}:${r.usage.input_tokens}/${r.usage.output_tokens}` : `${s}:${JSON.stringify(r).slice(0, 80)}`)).join(" "));
+console.log("cost:", JSON.stringify(out.cost_summary));

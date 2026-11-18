@@ -5,7 +5,7 @@ from pathlib import Path
 SRC = Path(__file__).resolve().parents[1] / "src"
 sys.path.insert(0, str(SRC))
 
-from policy_engine import approval_check, evidence_completeness, next_state, scope_check, source_check
+from policy_engine import approval_check, evidence_completeness, next_state, packet_sha256, scope_check, source_check
 
 
 class PolicyEngineTests(unittest.TestCase):
@@ -120,8 +120,14 @@ class PolicyEngineTests(unittest.TestCase):
         result = approval_check(self._approval(valid=False), "GIC-20260903-001", "v2")
         self.assertEqual((result.result, result.rule_id), ("DENY", "APPROVAL_INVALIDATED"))
 
+    @staticmethod
+    def _bound(record, version="v2", text="packet text"):
+        """approval_check with mandatory content binding: record, validated text and packet in hand agree."""
+        h = packet_sha256(text)
+        return approval_check({**record, "packet_sha256": h}, "GIC-20260903-001", version, packet_sha256=h, validated_sha256=h)
+
     def test_valid_true_approval_still_allowed(self):
-        self.assertEqual(approval_check(self._approval(valid=True), "GIC-20260903-001", "v2").result, "ALLOW")
+        self.assertEqual(self._bound(self._approval(valid=True)).result, "ALLOW")
 
     def test_valid_flag_must_be_exactly_true(self):
         for bad in ("false", "true", None, 0, 1, ""):
@@ -129,7 +135,12 @@ class PolicyEngineTests(unittest.TestCase):
                 self.assertEqual(approval_check(self._approval(valid=bad), "GIC-20260903-001", "v2").rule_id, "APPROVAL_INVALIDATED")
 
     def test_record_without_valid_flag_is_accepted_for_compatibility(self):
-        self.assertEqual(approval_check(self._approval(), "GIC-20260903-001", "v2").result, "ALLOW")
+        self.assertEqual(self._bound(self._approval()).result, "ALLOW")
+
+    def test_content_binding_is_mandatory_no_version_only_allow(self):
+        # An otherwise perfect approval is DENIED when the caller supplies no hashes.
+        result = approval_check(self._approval(valid=True), "GIC-20260903-001", "v2")
+        self.assertEqual((result.result, result.rule_id), ("DENY", "APPROVAL_CONTENT_UNVERIFIABLE"))
 
     def test_invalidated_approval_is_denied_even_for_its_own_version_after_rollback(self):
         invalidated = self._approval(valid=False)
@@ -147,7 +158,7 @@ class PolicyEngineTests(unittest.TestCase):
             "method": "NOTION",
             "evidence_reference": "notion:decision-log",
         }
-        self.assertEqual(approval_check(record, "GIC-20260903-001", "v1").result, "ALLOW")
+        self.assertEqual(self._bound(record, version="v1").result, "ALLOW")
 
     def test_evidence_completeness(self):
         self.assertEqual(evidence_completeness(20, 19), 95.0)

@@ -55,7 +55,8 @@
         "timestamp": {"type": "string", "minLength": 1},
         "method": {"enum": ["SIGNED_PDF", "NOTION", "CHAT"]},
         "evidence_reference": {"type": "string", "minLength": 1},
-        "valid": {"type": "boolean"}
+        "valid": {"type": "boolean"},
+        "packet_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
       },
       "additionalProperties": false
     },
@@ -66,7 +67,7 @@
         "event_id": {"type": "string"},
         "command_id": {"type": "string"},
         "timestamp": {"type": "string"},
-        "actor": {"enum": ["OWNER", "AI_OPERATOR", "SYSTEM"]},
+        "actor": {"enum": ["OWNER", "AI_OPERATOR", "SYSTEM", "OPERATOR"]},
         "event_type": {"type": "string"},
         "object_type": {"type": "string"},
         "object_id": {"type": "string"},
